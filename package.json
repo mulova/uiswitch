@@ -1,0 +1,12 @@
+
+{
+	"name": "com.mulova.uiswitch",
+	"displayName": "com.mulova.uiswitch",
+	"version": "0.0.1",
+	"unity": "2018.1",
+	"description": "common unity library",
+	"keywords": ["mulova", "uiswitch"],
+	"category": "mulova",
+	"dependencies": {
+	}
+}
