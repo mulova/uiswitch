@@ -7,22 +7,54 @@ namespace uiswitch
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
     {
+        public bool autoRemove;
         private UISwitch uiSwitch;
         internal static bool exclusive = true;
-
+        private double changedTime = double.MaxValue;
 
         void OnEnable()
         {
             uiSwitch = (UISwitch)target;
+            EditorApplication.update += OnUpdate;
+            changedTime = double.MaxValue;
+        }
+
+        private void OnDisable()
+        {
+            EditorApplication.update -= OnUpdate;
         }
 
         public override void OnInspectorGUI()
         {
-#if AUTO_REMOVE
-            RemoveUnused();
-#endif
+            if (autoRemove)
+            {
+                RemoveUnused();
+            }
             DrawDefaultInspector();
         }
+
+        void OnUpdate()
+        {
+            bool changed = false;
+            foreach (var s in uiSwitch.switches)
+            {
+                foreach (var t in s.trans)
+                {
+                    changed |= t.hasChanged;
+                }
+            }
+            if (changed)
+            {
+                EditorUtility.SetDirty(this);
+                changedTime = EditorApplication.timeSinceStartup;
+                Repaint();
+            } else if (EditorApplication.timeSinceStartup - changedTime > 0.2)
+            {
+                changedTime = double.MaxValue;
+                Repaint();
+            }
+        }
+
 
         public static bool[] GetVisibilityUnion(UISwitch uiSwitch)
         {

@@ -17,12 +17,11 @@ namespace uiswitch
 {
     public class UISwitch : MonoBehaviour
     {
-        [SerializeField, EnumType] private string enumType;
+        [SerializeField, EnumType] private string enumType = "";
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
         [SerializeField] public List<UISwitchSect> switches = new List<UISwitchSect>();
-        [SerializeField] public UISwitchPreset[] preset;
+        [SerializeField] public List<UISwitchPreset> preset = new List<UISwitchPreset>();
 
-        public bool overwrite = false;
         private UISwitchSect DUMMY = new UISwitchSect();
         private HashSet<string> keySet = new HashSet<string>();
 
@@ -34,22 +33,40 @@ namespace uiswitch
             }
         }
 
-
         public void ResetSwitch()
         {
             keySet.Clear();
         }
 
-        public bool Contains(params object[] list)
+        public bool Contains(object o)
         {
-            foreach (object o in list)
+            string s = Normalize(o);
+            return keySet.Find(k => k.Equals(Normalize(s))) != null;
+        }
+
+        public bool Is(params object[] list)
+        {
+            if (list.Count() == keySet.Count)
             {
-                if (!keySet.Contains(Normalize(o)))
+                foreach (object o in list)
                 {
-                    return false;
+                    if (!Contains(o))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
+        }
+
+        public bool IsPreset(string s)
+        {
+            var p = preset.Find(i => i.presetName == s);
+            if (p == null)
+            {
+                return false;
+            }
+            return Is(p.keys);
         }
 
         public void AddSwitch(params object[] list)
@@ -113,14 +130,6 @@ namespace uiswitch
 
         public void Set(params object[] param)
         {
-            if (!overwrite&&Contains(param))
-            {
-                if (log.IsLoggable(LogType.Log))
-                {
-                    log.Debug("ObjSwitch {0}: Duplicate ignored ( {1} )", name, param.Join(","));
-                }
-                return;
-            }
             ResetSwitch();
             AddSwitch(param);
             Apply();
@@ -128,7 +137,7 @@ namespace uiswitch
 
         public void SetPreset(object id)
         {
-            var idStr = id.ToString();
+            var idStr = Normalize(id);
             foreach (var p in preset)
             {
                 if (p.presetName == idStr)
@@ -138,14 +147,9 @@ namespace uiswitch
             }
         }
 
-        public bool Is(object o)
-        {
-            return keySet.Contains(Normalize(o));
-        }
-
         private string Normalize(object o)
         {
-            return o.ToString().ToLower();
+            return o.ToString();
         }
 
         public List<string> GetAllKeys()
@@ -168,7 +172,7 @@ namespace uiswitch
                     }
                     match++;
                     // set positions
-                    for (int i = 0; i < e.trans.Length; ++i)
+                    for (int i = 0; i < e.trans.Count; ++i)
                     {
                         e.trans[i].localPosition = e.pos[i];
                     }
@@ -189,7 +193,7 @@ namespace uiswitch
 
             if (log.IsLoggable(LogType.Log))
             {
-                log.Debug("ObjSwitch {0}: {1}", name, keySet.Join(","));
+                log.Debug("{0}: switch {1}", name, keySet.Join(","));
             }
             if (match != keySet.Count)
             {

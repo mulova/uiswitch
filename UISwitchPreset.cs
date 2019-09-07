@@ -12,7 +12,7 @@ namespace uiswitch
     public class UISwitchPreset : ICloneable
     {
         public string presetName;
-        [EnumPopup("enumType")] public string[] keys = new string[0];
+        public string[] keys = new string[0];
 
         public object Clone()
         {

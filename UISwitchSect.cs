@@ -13,12 +13,12 @@ using System.Ex;
 namespace uiswitch
 {
     [System.Serializable]
-    public struct UISwitchSect : ICloneable
+    public class UISwitchSect : ICloneable
     {
         [EnumPopup("enumType")] public string name;
-        public List<bool> visibility;
-        public Transform[] trans;
-        public Vector3[] pos;
+        public List<bool> visibility = new List<bool>();
+        public List<Transform> trans = new List<Transform>();
+        public List<Vector3> pos = new List<Vector3>();
         [NonSerialized] public Action action;
 
         public bool isValid
@@ -34,8 +34,8 @@ namespace uiswitch
             UISwitchSect e = new UISwitchSect();
             e.name = this.name;
             e.visibility = new List<bool>(visibility);
-            e.trans = (Transform[])trans.Clone();
-            e.pos = (Vector3[])pos.Clone();
+            e.trans = new List<Transform>(trans);
+            e.pos = new List<Vector3>(pos);
             return e;
         }
 

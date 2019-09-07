@@ -1,30 +1,32 @@
 using System.Collections.Generic;
+using System.Collections.Generic.Ex;
+using System.Text.Ex;
+using comunity;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using System.Text.Ex;
-using comunity;
-using System.Collections.Generic.Ex;
 
 namespace uiswitch
 {
     [CustomPropertyDrawer(typeof(UISwitchSect))]
     public class UISwitchSectDrawer : PropertyDrawerBase
     {
-        private Dictionary<string, ReorderSerialized<bool>> vPool = new Dictionary<string, ReorderSerialized<bool>>();
+        private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
+        private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
+        private static string activeSect;
 
-        private ReorderSerialized<bool> GetDrawer(SerializedProperty p)
+        private PropertyReorder<bool> GetVisibilityDrawer(SerializedProperty p)
         {
             var v = vPool.Get(p.propertyPath);
             if (v == null)
             {
-                var prop = p.FindPropertyRelative("visibility");
-                v = new ReorderSerialized<bool>(prop);
+                var visibility = p.FindPropertyRelative("visibility");
+                v = new PropertyReorder<bool>(visibility);
                 v.drawItem = OnDrawVisibility;
 
-                v.onAdd = i => OnAddObject(prop, i);
-                v.onRemove = i => OnRemoveObject(prop, i);
-                v.onReorder = (i1, i2) => OnReorderObject(prop, i1, i2);
+                v.onAdd = i => OnAddObject(visibility, i);
+                v.onRemove = i => OnRemoveObject(visibility, i);
+                v.onReorder = (i1, i2) => OnReorderObject(visibility, i1, i2);
                 v.canAdd = () =>
                 {
                     var objs = p.serializedObject.FindProperty("objs");
@@ -35,68 +37,113 @@ namespace uiswitch
             return v;
         }
 
-#if SWITCH_TRANSFORM
-        private ReorderSerialized<Transform> trans;
-        private ReorderSerialized<Vector3> pos;
-#endif
+        private PropertyReorder<Transform> GetTransDrawer(SerializedProperty p)
+        {
+            var t = tPool.Get(p.propertyPath);
+            if (t == null)
+            {
+                var trans = p.FindPropertyRelative("trans");
+                t = new PropertyReorder<Transform>(trans);
+                t.onAdd = i => OnAddTrans(p, i);
+                t.onRemove = i => OnRemoveTrans(p, i);
+                t.onReorder = (i1, i2) => OnReorderTrans(p, i1, i2);
+                t.canAdd = () =>
+                {
+                    if (Selection.activeGameObject == null)
+                    {
+                        return false;
+                    }
+                    var sel = Selection.activeGameObject.transform;
+                    for (int i=0; i<trans.arraySize; ++i)
+                    {
+                        if (trans.GetArrayElementAtIndex(i).objectReferenceValue == sel)
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+                tPool[p.propertyPath] = t;
+            }
+            return t;
+        }
 
-        protected override void DrawProperty(SerializedProperty p, Rect bound)
+        private double changedTime;
+        protected override void OnGUI(SerializedProperty p, Rect bound)
         {
             // Draw Name
             var bounds = bound.SplitByHeights(lineHeight);
             var n = p.FindPropertyRelative("name");
-            var nameBounds = bounds[0].SplitByWidths(50);
-            Color c = GUI.contentColor;
+            var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
             if (n.stringValue.IsEmpty())
             {
-                GUI.color = Color.red;
+                GUI.enabled = false;
             }
-            if (GUI.Button(nameBounds[0], new GUIContent("ID")))
+            if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
             {
+                activeSect = p.propertyPath;
                 var script = p.serializedObject.targetObject as UISwitch;
                 script.Set(n.stringValue);
             }
+            GUI.enabled = true;
             EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
-            GUI.color = c;
 
             // Draw Visibility
-            var visibility = GetDrawer(p);
+            var visibility = GetVisibilityDrawer(p);
             bounds[1].x += 30;
             bounds[1].width -= 30;
             var objBound = bounds[1];
-            objBound.height = visibility.drawer.GetHeight();
+            objBound.height = visibility.GetHeight();
             visibility.Draw(objBound);
 
-#if SWITCH_TRANSFORM
-            // Draw Visibility
-            var tBound = objBound;
-            tBound.height = trans.drawer.GetHeight();
-            tBound.y += objBound.height;
-            trans.Draw(tBound);
-            var pBound = tBound;
-            pBound.height = pos.drawer.GetHeight();
-            pBound.y += tBound.height;
-            pos.Draw(pBound);
-#endif
+            var trans = GetTransDrawer(p);
+            Color c = GUI.color;
+            if (p.propertyPath == activeSect)
+            {
+                c = UpdatePos(p)? Color.red: Color.yellow;
+            }
+            using (new EditorGUIUtil.ColorScope(c))
+            {
+                var tBound = objBound;
+                tBound.height = trans.GetHeight();
+                tBound.y += objBound.height;
+                trans.Draw(tBound);
+            }
         }
 
-        //public override bool CanCacheInspectorGUI(SerializedProperty property)
-        //{
-        //    return false;
-        //}
+        private bool UpdatePos(SerializedProperty property)
+        {
+            var trans = property.FindPropertyRelative("trans");
+            var pos = property.FindPropertyRelative("pos");
+            bool changed = EditorApplication.timeSinceStartup-changedTime <= 0.2;
+
+            for (int i=0; i<trans.arraySize; ++i)
+            {
+                var t = trans.GetArrayElementAtIndex(i).objectReferenceValue as Transform;
+                if (t.hasChanged)
+                {
+                    t.hasChanged = false;
+                    var p = pos.GetArrayElementAtIndex(i);
+                    p.vector3Value = t.localPosition;
+                    changedTime = EditorApplication.timeSinceStartup;
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+
+        public override bool CanCacheInspectorGUI(SerializedProperty property)
+        {
+            return false;
+        }
 
         public override float GetPropertyHeight(SerializedProperty p, GUIContent label)
         {
-            var visibility = GetDrawer(p);
+            var visibility = GetVisibilityDrawer(p);
             var separator = 10;
-#if SWITCH_TRANSFORM
-            trans = new ReorderSerialized<Transform>(p.FindPropertyRelative("trans"));
-            pos = new ReorderSerialized<Vector3>(p.FindPropertyRelative("pos"));
-#endif
-            return visibility.drawer.GetHeight()
-#if SWITCH_TRANSFORM
-            + trans.drawer.GetHeight() + pos.drawer.GetHeight()
-#endif
+            var trans = GetTransDrawer(p);
+            return visibility.GetHeight()
+                + trans.GetHeight()
                 + lineHeight + separator;
         }
 
@@ -137,69 +184,100 @@ namespace uiswitch
             GUI.contentColor = color;
         }
 
-        private void OnReorderObject(SerializedProperty p, int i1, int i2)
+        private void OnReorderObject(SerializedProperty sect, int i1, int i2)
         {
             // reorder objs
-            var objs = p.serializedObject.FindProperty("objs");
+            var objs = sect.serializedObject.FindProperty("objs");
             objs.MoveArrayElement(i1, i2);
-            p.serializedObject.ApplyModifiedProperties();
+            sect.serializedObject.ApplyModifiedProperties();
 
             // reorder visibility element
-            var switches = p.serializedObject.FindProperty("switches");
+            var switches = sect.serializedObject.FindProperty("switches");
             for (int i = 0; i < switches.arraySize; ++i)
             {
                 var s = switches.GetArrayElementAtIndex(i);
                 var visibility = s.FindPropertyRelative("visibility");
-                if (p.propertyPath != visibility.propertyPath)
+                if (sect.propertyPath != visibility.propertyPath)
                 {
                     visibility.MoveArrayElement(i1, i2);
                 }
             }
-            p.serializedObject.ApplyModifiedProperties();
+            sect.serializedObject.ApplyModifiedProperties();
         }
 
-        private void OnAddObject(SerializedProperty p, int index)
+        private void OnAddObject(SerializedProperty sect, int index)
         {
-            p.GetArrayElementAtIndex(index).boolValue = true;
+            sect.GetArrayElementAtIndex(index).boolValue = true;
             // Add object to "objs"
-            var objs = p.serializedObject.FindProperty("objs");
+            var objs = sect.serializedObject.FindProperty("objs");
             objs.InsertArrayElementAtIndex(index);
             var item = objs.GetArrayElementAtIndex(index);
             item.objectReferenceValue = Selection.activeObject;
 
             // Add visibility element
-            var switches = p.serializedObject.FindProperty("switches");
+            var switches = sect.serializedObject.FindProperty("switches");
             for (int i = 0; i < switches.arraySize; ++i)
             {
                 var s = switches.GetArrayElementAtIndex(i);
                 var visibility = s.FindPropertyRelative("visibility");
-                if (p.propertyPath != visibility.propertyPath)
+                if (sect.propertyPath != visibility.propertyPath)
                 {
                     visibility.InsertArrayElementAtIndex(index);
                     visibility.GetArrayElementAtIndex(index).boolValue = false;
                 }
             }
-            p.serializedObject.ApplyModifiedProperties();
+            sect.serializedObject.ApplyModifiedProperties();
         }
 
-        private void OnRemoveObject(SerializedProperty p, int index)
+        private void OnRemoveObject(SerializedProperty sect, int index)
         {
-            var objs = p.serializedObject.FindProperty("objs");
+            var objs = sect.serializedObject.FindProperty("objs");
             objs.DeleteArrayElementAtIndex(index); // clear reference
             objs.DeleteArrayElementAtIndex(index); // remove index
 
             // Remove visibility element
-            var switches = p.serializedObject.FindProperty("switches");
+            var switches = sect.serializedObject.FindProperty("switches");
             for (int i = 0; i < switches.arraySize; ++i)
             {
                 var s = switches.GetArrayElementAtIndex(i);
                 var visibility = s.FindPropertyRelative("visibility");
-                if (p.propertyPath != visibility.propertyPath)
+                if (sect.propertyPath != visibility.propertyPath)
                 {
                     visibility.DeleteArrayElementAtIndex(index);
                 }
             }
-            p.serializedObject.ApplyModifiedProperties();
+            sect.serializedObject.ApplyModifiedProperties();
+        }
+
+        private void OnReorderTrans(SerializedProperty sect, int i1, int i2)
+        {
+            // reorder pos
+            var pos = sect.FindPropertyRelative("pos");
+            pos.MoveArrayElement(i1, i2);
+            sect.serializedObject.ApplyModifiedProperties();
+        }
+
+        private void OnAddTrans(SerializedProperty sect, int index)
+        {
+            var sel = Selection.activeGameObject.transform;
+            // Add object to "pos"
+            //sect.serializedObject.ApplyModifiedProperties();
+            var trans = sect.FindPropertyRelative("trans");
+            var t = trans.GetArrayElementAtIndex(index);
+            t.objectReferenceValue = sel;
+            var pos = sect.FindPropertyRelative("pos");
+            pos.InsertArrayElementAtIndex(index);
+            var posItem = pos.GetArrayElementAtIndex(index);
+            posItem.vector3Value = sel.localPosition;
+        }
+
+        private void OnRemoveTrans(SerializedProperty sect, int index)
+        {
+            var trans = sect.FindPropertyRelative("trans");
+            trans.DeleteArrayElementAtIndex(index); // remove index
+            var pos = sect.FindPropertyRelative("pos");
+            pos.DeleteArrayElementAtIndex(index); // clear reference
+            sect.serializedObject.ApplyModifiedProperties();
         }
     }
 }
