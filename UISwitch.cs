@@ -7,13 +7,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using mulova.commons;
 using System.Text.Ex;
 using System.Collections.Generic.Ex;
 using System.Ex;
 using System.Linq;
+using UnityEngine.Assertions;
 
-namespace uiswitch
+namespace mulova.uiswitch
 {
     public class UISwitch : MonoBehaviour
     {
@@ -124,7 +124,7 @@ namespace uiswitch
                 s.action = action;
             } else
             {
-                Assert.Fail(this, "{0} not found", k);
+                Assert.IsTrue(false, $"Key {k} not found");
             }
         }
 
@@ -197,7 +197,7 @@ namespace uiswitch
             }
             if (match != keySet.Count)
             {
-                Assert.Fail(this, "Invalid param {0}", keySet.Join(","));
+                Assert.IsTrue(false, $"Invalid param {keySet.Join(",")}");
             }
         }
 

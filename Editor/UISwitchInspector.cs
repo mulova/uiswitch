@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
-using comunity;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 
-namespace uiswitch
+namespace mulova.uiswitch
 {
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
@@ -66,7 +67,7 @@ namespace uiswitch
                 if (set.Contains(s.visibility))
                 {
                     uiSwitch.switches[i] = new UISwitchSect();
-                    EditorUtil.SetDirty(uiSwitch);
+                    EditorUtil_SetDirty(uiSwitch);
                 }
                 set.Add(uiSwitch.switches[i].visibility);
                 for (int j = 0; j < s.visibility.Count; ++j)
@@ -89,8 +90,33 @@ namespace uiswitch
                     {
                         uiSwitch.switches[j].visibility.RemoveAt(i);
                     }
-                    EditorUtil.SetDirty(uiSwitch);
+                    EditorUtil_SetDirty(uiSwitch);
                 }
+            }
+        }
+
+        public static void EditorUtil_SetDirty(Object o)
+        {
+            if (Application.isPlaying || o == null)
+            {
+                return;
+            }
+            GameObject go = null;
+            if (o is GameObject)
+            {
+                go = o as GameObject;
+            }
+            else if (o is Component)
+            {
+                go = (o as Component).gameObject;
+            }
+            if (go != null && go.scene.IsValid())
+            {
+                EditorSceneManager.MarkSceneDirty(go.scene);
+            }
+            else
+            {
+                UnityEditor.EditorUtility.SetDirty(o);
             }
         }
     }

@@ -10,7 +10,7 @@ using mulova.commons;
 using System.Text.Ex;
 using System.Ex;
 
-namespace uiswitch
+namespace mulova.uiswitch
 {
     [System.Serializable]
     public class UISwitchSect : ICloneable
