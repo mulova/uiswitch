@@ -5,6 +5,7 @@ using Object = UnityEngine.Object;
 using System.Text.Ex;
 using mulova.comunity;
 using System.Collections.Generic.Ex;
+using UnityEngine.Ex;
 
 namespace mulova.uiswitch
 {
