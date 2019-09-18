@@ -1,0 +1,15 @@
+{
+    "name": "mulova.ui",
+    "references": [
+        "mulova.commons",
+        "mulova.unicore"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

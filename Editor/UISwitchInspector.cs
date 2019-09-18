@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace mulova.uiswitch
+namespace mulova.ui
 {
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor

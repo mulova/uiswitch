@@ -13,7 +13,7 @@ using System.Ex;
 using System.Linq;
 using UnityEngine.Assertions;
 
-namespace mulova.uiswitch
+namespace mulova.ui
 {
     public class UISwitch : MonoBehaviour
     {

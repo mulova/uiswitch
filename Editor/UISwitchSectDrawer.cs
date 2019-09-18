@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Ex;
 using Object = UnityEngine.Object;
 
-namespace mulova.uiswitch
+namespace mulova.ui
 {
     [CustomPropertyDrawer(typeof(UISwitchSect))]
     public class UISwitchSectDrawer : PropertyDrawerBase

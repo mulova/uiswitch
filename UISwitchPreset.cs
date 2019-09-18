@@ -6,7 +6,7 @@
 using System;
 using mulova.commons;
 
-namespace mulova.uiswitch
+namespace mulova.ui
 {
     [Serializable]
     public class UISwitchPreset : ICloneable

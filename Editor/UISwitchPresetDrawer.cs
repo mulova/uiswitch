@@ -7,7 +7,7 @@ using mulova.comunity;
 using System.Collections.Generic.Ex;
 using UnityEngine.Ex;
 
-namespace mulova.uiswitch
+namespace mulova.ui
 {
     [CustomPropertyDrawer(typeof(UISwitchPreset))]
     public class UISwitchPresetDrawer : PropertyDrawerBase

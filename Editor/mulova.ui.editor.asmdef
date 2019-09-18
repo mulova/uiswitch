@@ -1,0 +1,19 @@
+{
+    "name": "mulova.ui.editor",
+    "references": [
+        "mulova.commons",
+        "mulova.unicore",
+        "mulova.unicore.editor",
+        "mulova.ui"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
