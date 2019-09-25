@@ -1,16 +1,15 @@
 ﻿//----------------------------------------------
 // Unity3D common libraries and editor tools
 // License: The MIT License ( http://opensource.org/licenses/MIT )
-// Copyright © 2013-2014 mulova@gmail.com
+// Copyright © 2013- mulova@gmail.com
 //----------------------------------------------
 
-using UnityEngine;
-using System.Collections.Generic;
 using System;
-using System.Text.Ex;
+using System.Collections.Generic;
 using System.Collections.Generic.Ex;
 using System.Ex;
-using System.Linq;
+using System.Text.Ex;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace mulova.ui
@@ -46,7 +45,7 @@ namespace mulova.ui
 
         public bool Is(params object[] list)
         {
-            if (list.Count() == keySet.Count)
+            if (list.GetCount() == keySet.Count)
             {
                 foreach (object o in list)
                 {
