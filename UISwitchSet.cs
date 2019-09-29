@@ -8,17 +8,18 @@ using System.Collections.Generic;
 using System.Ex;
 using System.Text.Ex;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace mulova.ui
 {
-    [System.Serializable]
-    public class UISwitchSect : ICloneable
+    [Serializable]
+    public class UISwitchSet : ICloneable
     {
         [EnumPopup("enumType")] public string name;
         public List<bool> visibility = new List<bool>();
         public List<Transform> trans = new List<Transform>();
         public List<Vector3> pos = new List<Vector3>();
-        [NonSerialized] public Action action;
+        public UnityEvent action;
 
         public bool isValid
         {
@@ -30,7 +31,7 @@ namespace mulova.ui
 
         public object Clone()
         {
-            UISwitchSect e = new UISwitchSect();
+            UISwitchSet e = new UISwitchSet();
             e.name = this.name;
             e.visibility = new List<bool>(visibility);
             e.trans = new List<Transform>(trans);

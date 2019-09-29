@@ -9,8 +9,8 @@ using Object = UnityEngine.Object;
 
 namespace mulova.ui
 {
-    [CustomPropertyDrawer(typeof(UISwitchSect))]
-    public class UISwitchSectDrawer : PropertyDrawerBase
+    [CustomPropertyDrawer(typeof(UISwitchSet))]
+    public class UISwitchSetDrawer : PropertyDrawerBase
     {
         private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
         private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
@@ -103,13 +103,20 @@ namespace mulova.ui
             {
                 c = UpdatePos(p)? Color.red: Color.yellow;
             }
+
+            var tBound = objBound;
             using (new EditorGUIUtil.ColorScope(c))
             {
-                var tBound = objBound;
                 tBound.height = trans.GetHeight();
                 tBound.y += objBound.height;
                 trans.Draw(tBound);
             }
+
+            var actionProperty = p.FindPropertyRelative("action");
+            var aBound = tBound;
+            aBound.height = EditorGUI.GetPropertyHeight(actionProperty);
+            aBound.y += tBound.height;
+            EditorGUI.PropertyField(aBound, actionProperty);
         }
 
         private bool UpdatePos(SerializedProperty property)
@@ -145,6 +152,7 @@ namespace mulova.ui
             var trans = GetTransDrawer(p);
             return visibility.GetHeight()
                 + trans.GetHeight()
+                + EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action"))
                 + lineHeight + separator;
         }
 

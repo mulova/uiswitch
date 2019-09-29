@@ -66,7 +66,7 @@ namespace mulova.ui
                 var s = uiSwitch.switches[i];
                 if (set.Contains(s.visibility))
                 {
-                    uiSwitch.switches[i] = new UISwitchSect();
+                    uiSwitch.switches[i] = new UISwitchSet();
                     EditorUtil_SetDirty(uiSwitch);
                 }
                 set.Add(uiSwitch.switches[i].visibility);
