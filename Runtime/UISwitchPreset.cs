@@ -4,7 +4,7 @@
 //----------------------------------------------
 
 using System;
-using mulova.commons;
+using System.Ex;
 
 namespace mulova.ui
 {
@@ -17,7 +17,7 @@ namespace mulova.ui
         public object Clone()
         {
             UISwitchPreset p = new UISwitchPreset();
-            p.keys = ArrayUtil.Clone(keys);
+            p.keys = keys.ShallowClone();
             return p;
         }
     }

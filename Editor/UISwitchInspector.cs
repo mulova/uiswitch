@@ -116,7 +116,7 @@ namespace mulova.ui
             }
             else
             {
-                UnityEditor.EditorUtility.SetDirty(o);
+                EditorUtility.SetDirty(o);
             }
         }
     }
