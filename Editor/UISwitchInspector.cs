@@ -8,6 +8,7 @@ namespace mulova.ui
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
     {
+        public static bool showSceneUI = true;
         public bool autoRemove;
         private UISwitch uiSwitch;
         internal static bool exclusive = true;
@@ -29,24 +30,28 @@ namespace mulova.ui
         {
             Handles.BeginGUI();
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
-            foreach (var p in uiSwitch.preset)
+            showSceneUI = GUILayout.Toggle(showSceneUI, "");
+            if (showSceneUI)
             {
-                if (GUILayout.Button(p.presetName))
+                GUILayout.BeginVertical();
+                foreach (var p in uiSwitch.preset)
                 {
-                    uiSwitch.SetPreset(p.presetName);
+                    if (GUILayout.Button(p.presetName))
+                    {
+                        uiSwitch.SetPreset(p.presetName);
+                    }
                 }
-            }
-            GUILayout.EndVertical();
-            GUILayout.BeginVertical();
-            foreach (var s in uiSwitch.switches)
-            {
-                if (GUILayout.Button(s.name))
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                foreach (var s in uiSwitch.switches)
                 {
-                    uiSwitch.Set(s.name);
+                    if (GUILayout.Button(s.name))
+                    {
+                        uiSwitch.Set(s.name);
+                    }
                 }
+                GUILayout.EndVertical();
             }
-            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             Handles.EndGUI();
         }
