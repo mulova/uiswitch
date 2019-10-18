@@ -25,6 +25,32 @@ namespace mulova.ui
             EditorApplication.update -= OnUpdate;
         }
 
+        private void OnSceneGUI()
+        {
+            Handles.BeginGUI();
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            foreach (var p in uiSwitch.preset)
+            {
+                if (GUILayout.Button(p.presetName))
+                {
+                    uiSwitch.SetPreset(p.presetName);
+                }
+            }
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            foreach (var s in uiSwitch.switches)
+            {
+                if (GUILayout.Button(s.name))
+                {
+                    uiSwitch.Set(s.name);
+                }
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            Handles.EndGUI();
+        }
+
         public override void OnInspectorGUI()
         {
             if (autoRemove)

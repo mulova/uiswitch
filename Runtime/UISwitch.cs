@@ -14,6 +14,7 @@ using UnityEngine.Events;
 
 namespace mulova.ui
 {
+    [ExecuteInEditMode]
     public class UISwitch : MonoBehaviour
     {
         [SerializeField, EnumType] private string enumType = "";
