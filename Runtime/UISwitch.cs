@@ -17,7 +17,9 @@ namespace mulova.ui
     [ExecuteInEditMode]
     public class UISwitch : MonoBehaviour
     {
+#pragma warning disable 0414
         [SerializeField, EnumType] private string enumType = "";
+#pragma warning restore 0414
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
         [SerializeField] public List<UISwitchSet> switches = new List<UISwitchSet>();
         [SerializeField] public List<UISwitchPreset> preset = new List<UISwitchPreset>();

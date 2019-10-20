@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using mulova.unicore;
 
 namespace mulova.ui
 {
@@ -33,24 +34,30 @@ namespace mulova.ui
             showSceneUI = GUILayout.Toggle(showSceneUI, "");
             if (showSceneUI)
             {
-                GUILayout.BeginVertical();
-                foreach (var p in uiSwitch.preset)
+                using (new GUILayout.VerticalScope())
                 {
-                    if (GUILayout.Button(p.presetName))
+                    foreach (var p in uiSwitch.preset)
                     {
-                        uiSwitch.SetPreset(p.presetName);
+                        if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(300)))
+                        {
+                            uiSwitch.SetPreset(p.presetName);
+                        }
                     }
                 }
-                GUILayout.EndVertical();
-                GUILayout.BeginVertical();
-                foreach (var s in uiSwitch.switches)
+                using (new GUILayout.VerticalScope())
                 {
-                    if (GUILayout.Button(s.name))
+                    foreach (var s in uiSwitch.switches)
                     {
-                        uiSwitch.Set(s.name);
+                        using (new EditorGUIUtil.ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
+                        {
+                            if (GUILayout.Button(s.name, GUILayout.MaxWidth(300)))
+                            {
+                                uiSwitch.Set(s.name);
+                                UISwitchSetDrawer.activeSet = s.name;
+                            }
+                        }
                     }
                 }
-                GUILayout.EndVertical();
             }
             GUILayout.EndHorizontal();
             Handles.EndGUI();

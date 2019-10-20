@@ -14,7 +14,7 @@ namespace mulova.ui
     {
         private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
         private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
-        private static string activeSect;
+        internal static string activeSet;
 
         private PropertyReorder<bool> GetVisibilityDrawer(SerializedProperty p)
         {
@@ -82,7 +82,7 @@ namespace mulova.ui
             }
             if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
             {
-                activeSect = p.propertyPath;
+                activeSet = n.stringValue;
                 var script = p.serializedObject.targetObject as UISwitch;
                 script.Set(n.stringValue);
             }
@@ -99,7 +99,7 @@ namespace mulova.ui
 
             var trans = GetTransDrawer(p);
             Color c = GUI.color;
-            if (p.propertyPath == activeSect)
+            if (n.stringValue == activeSet)
             {
                 c = UpdatePos(p)? Color.red: Color.yellow;
             }

@@ -21,16 +21,4 @@ namespace mulova.ui
             return p;
         }
     }
-
-    public static class UISwitchEx
-    {
-        public static void SetEx(this UISwitch s, params object[] param)
-        {
-            if (s == null)
-            {
-                return;
-            }
-            s.Set(param);
-        }
-    }
 }
