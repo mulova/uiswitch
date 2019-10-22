@@ -3,13 +3,14 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using mulova.unicore;
+using System.Collections.Generic.Ex;
 
 namespace mulova.ui
 {
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
     {
-        public static bool showSceneUI = true;
+        public static bool showSceneUI = false;
         public bool autoRemove;
         private UISwitch uiSwitch;
         internal static bool exclusive = true;
@@ -30,22 +31,28 @@ namespace mulova.ui
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
-            GUILayout.BeginHorizontal();
-            showSceneUI = GUILayout.Toggle(showSceneUI, "");
+            ActiveEditorTracker.sharedTracker.isLocked = showSceneUI = GUILayout.Toggle(showSceneUI, "Lock");
             if (showSceneUI)
             {
-                using (new GUILayout.VerticalScope())
+                if (!uiSwitch.preset.IsEmpty())
                 {
-                    foreach (var p in uiSwitch.preset)
+                    using (new GUILayout.VerticalScope())
                     {
-                        if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(300)))
+                        GUILayout.Label("Preset");
+                        foreach (var p in uiSwitch.preset)
                         {
-                            uiSwitch.SetPreset(p.presetName);
+                            if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(300)))
+                            {
+                                uiSwitch.SetPreset(p.presetName);
+                                UISwitchSetDrawer.activeSet = null;
+                            }
                         }
                     }
                 }
+                GUILayout.Space(10);
                 using (new GUILayout.VerticalScope())
                 {
+                    GUILayout.Label("Option");
                     foreach (var s in uiSwitch.switches)
                     {
                         using (new EditorGUIUtil.ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
@@ -59,7 +66,6 @@ namespace mulova.ui
                     }
                 }
             }
-            GUILayout.EndHorizontal();
             Handles.EndGUI();
         }
 
