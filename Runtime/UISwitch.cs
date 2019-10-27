@@ -16,7 +16,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace mulova.ui
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class UISwitch : MonoBehaviour
     {
 #pragma warning disable 0414

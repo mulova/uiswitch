@@ -41,7 +41,7 @@ namespace mulova.ui
                         GUILayout.Label("Preset");
                         foreach (var p in uiSwitch.preset)
                         {
-                            if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(300)))
+                            if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(200)))
                             {
                                 uiSwitch.SetPreset(p.presetName);
                                 UISwitchSetDrawer.activeSet = null;
@@ -57,7 +57,7 @@ namespace mulova.ui
                     {
                         using (new EditorGUIUtil.ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
                         {
-                            if (GUILayout.Button(s.name, GUILayout.MaxWidth(300)))
+                            if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {
                                 uiSwitch.Set(s.name);
                                 UISwitchSetDrawer.activeSet = s.name;
