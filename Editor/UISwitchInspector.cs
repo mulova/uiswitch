@@ -55,7 +55,7 @@ namespace mulova.ui
                     GUILayout.Label("Option");
                     foreach (var s in uiSwitch.switches)
                     {
-                        using (new EditorGUIUtil.ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
+                        using (new ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
                         {
                             if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {

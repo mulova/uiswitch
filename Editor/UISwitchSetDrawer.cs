@@ -105,7 +105,7 @@ namespace mulova.ui
             }
 
             var tBound = objBound;
-            using (new EditorGUIUtil.ColorScope(c))
+            using (new ColorScope(c))
             {
                 tBound.height = trans.GetHeight();
                 tBound.y += objBound.height;
