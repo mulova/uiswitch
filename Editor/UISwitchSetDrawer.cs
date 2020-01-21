@@ -16,6 +16,9 @@ namespace mulova.ui
         private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
         internal static string activeSet;
 
+        public static readonly Color SelectedColor = Color.green;
+        public static readonly Color ChangedSelectedColor = Color.red;
+
         private PropertyReorder<bool> GetVisibilityDrawer(SerializedProperty p)
         {
             var v = vPool.Get(p.propertyPath);
@@ -76,17 +79,25 @@ namespace mulova.ui
             var bounds = bound.SplitByHeights(lineHeight);
             var n = p.FindPropertyRelative("name");
             var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
-            if (n.stringValue.IsEmpty())
+            Color c = GUI.color;
+            if (n.stringValue == activeSet)
             {
-                GUI.enabled = false;
+                c = UpdatePos(p)? ChangedSelectedColor: SelectedColor;
             }
-            if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
+
+            using (new EnableScope(!n.stringValue.IsEmpty()))
             {
-                activeSet = n.stringValue;
-                var script = p.serializedObject.targetObject as UISwitch;
-                script.Set(n.stringValue);
+                using (new ColorScope(c))
+                {
+                    if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
+                    {
+                        activeSet = n.stringValue;
+                        var script = p.serializedObject.targetObject as UISwitch;
+                        script.Set(n.stringValue);
+                    }
+                }
             }
-            GUI.enabled = true;
+
             EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
 
             // Draw Visibility
@@ -98,12 +109,6 @@ namespace mulova.ui
             visibility.Draw(objBound);
 
             var trans = GetTransDrawer(p);
-            Color c = GUI.color;
-            if (n.stringValue == activeSet)
-            {
-                c = UpdatePos(p)? Color.red: Color.yellow;
-            }
-
             var tBound = objBound;
             using (new ColorScope(c))
             {
@@ -172,25 +177,22 @@ namespace mulova.ui
         private void OnDrawVisibility(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused)
         {
             var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as UISwitch);
-            Color color = GUI.contentColor;
-            if (!union[index])
+            using (new ContentColorScope(Color.gray, !union[index]))
             {
-                GUI.contentColor = Color.gray;
+                var bounds = rect.SplitByWidths(25, 25);
+                // draw index
+                EditorGUI.PrefixLabel(bounds[0], new GUIContent(index.ToString()));
+                // draw bool
+                EditorGUI.PropertyField(bounds[1], item, new GUIContent(""));
+                var objs = item.serializedObject.FindProperty("objs");
+                var obj = objs.GetArrayElementAtIndex(index);
+                var oldObj = obj.objectReferenceValue;
+                EditorGUI.PropertyField(bounds[2], obj, new GUIContent(""));
+                if (obj.objectReferenceValue == null || IsDuplicate(objs, obj.objectReferenceValue))
+                {
+                    obj.objectReferenceValue = oldObj;
+                }
             }
-            var bounds = rect.SplitByWidths(25, 25);
-            // draw index
-            EditorGUI.PrefixLabel(bounds[0], new GUIContent(index.ToString()));
-            // draw bool
-            EditorGUI.PropertyField(bounds[1], item, new GUIContent(""));
-            var objs = item.serializedObject.FindProperty("objs");
-            var obj = objs.GetArrayElementAtIndex(index);
-            var oldObj = obj.objectReferenceValue;
-            EditorGUI.PropertyField(bounds[2], obj, new GUIContent(""));
-            if (obj.objectReferenceValue == null || IsDuplicate(objs, obj.objectReferenceValue))
-            {
-                obj.objectReferenceValue = oldObj;
-            }
-            GUI.contentColor = color;
         }
 
         private void OnReorderObject(SerializedProperty sect, int i1, int i2)
