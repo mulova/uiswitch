@@ -35,21 +35,28 @@ namespace mulova.ui
             // Draw Name
             var lines = position.SplitByHeights((int)EditorGUIUtility.singleLineHeight);
             var nameBounds = lines[0].SplitByWidthsRatio(0.5f, 0.5f);
-            Color c = GUI.contentColor;
-            if (n.stringValue.IsEmpty())
+            var keysProp = property.FindPropertyRelative("keys");
+            List<string> presetKeys = new List<string>();
+            for (int i=0; i<keysProp.arraySize; ++i)
             {
-                GUI.color = Color.red;
+                presetKeys.Add(keysProp.GetArrayElementAtIndex(i).stringValue);
             }
-            if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
+            using (new ColorScope(Color.green, UISwitchInspector.IsPreset(presetKeys)))
             {
-                var script = property.serializedObject.targetObject as UISwitch;
-                script.SetPreset(n.stringValue);
+                using (new ColorScope(Color.red, n.stringValue.IsEmpty()))
+                {
+                    if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
+                    {
+                        var script = property.serializedObject.targetObject as UISwitch;
+                        script.SetPreset(n.stringValue);
+                        UISwitchInspector.SetActive(presetKeys.ToArray());
+                    }
+                    EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
+                }
+                var drawer = GetKeysDrawer(property);
+                drawer.Draw(lines[1]);
             }
-            EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
-            GUI.color = c;
 
-            var drawer = GetKeysDrawer(property);
-            drawer.Draw(lines[1]);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

@@ -4,17 +4,49 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using mulova.unicore;
 using System.Collections.Generic.Ex;
+using mulova.commons;
 
 namespace mulova.ui
 {
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
     {
-        public static bool showSceneUI = false;
         public bool autoRemove;
         private UISwitch uiSwitch;
         internal static bool exclusive = true;
         private double changedTime = double.MaxValue;
+        internal static HashSet<string> activeSet = new HashSet<string>();
+
+        internal static bool IsPreset(IList<string> actives)
+        {
+            if (activeSet.Count != actives.Count)
+            {
+                return false;
+            }
+            foreach (var a in actives)
+            if (actives != null)
+            {
+                if (!activeSet.Contains(a))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        internal static void SetActive(params string[] actives)
+        {
+            activeSet.Clear();
+            if (actives != null)
+            {
+                activeSet.AddAll(actives);
+            }
+        }
+
+        internal static bool IsActive(string active)
+        {
+            return activeSet.Contains(active);
+        }
 
         void OnEnable()
         {
@@ -28,11 +60,16 @@ namespace mulova.ui
             EditorApplication.update -= OnUpdate;
         }
 
+        
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
-            ActiveEditorTracker.sharedTracker.isLocked = showSceneUI = GUILayout.Toggle(showSceneUI, "Lock");
-            if (showSceneUI)
+            bool locked = GUILayout.Toggle(ActiveEditorTracker.sharedTracker.isLocked, "Lock");
+            if (locked ^ ActiveEditorTracker.sharedTracker.isLocked)
+            {
+                ActiveEditorTracker.sharedTracker.isLocked = locked;
+            }
+            if (ActiveEditorTracker.sharedTracker.isLocked)
             {
                 if (!uiSwitch.preset.IsEmpty())
                 {
@@ -41,10 +78,13 @@ namespace mulova.ui
                         GUILayout.Label("Preset");
                         foreach (var p in uiSwitch.preset)
                         {
-                            if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(200)))
+                            using (new ColorScope(Color.green, IsPreset(p.keys)))
                             {
-                                uiSwitch.SetPreset(p.presetName);
-                                UISwitchSetDrawer.activeSet = null;
+                                if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(200)))
+                                {
+                                    uiSwitch.SetPreset(p.presetName);
+                                    SetActive(p.keys);
+                                }
                             }
                         }
                     }
@@ -55,18 +95,48 @@ namespace mulova.ui
                     GUILayout.Label("Option");
                     foreach (var s in uiSwitch.switches)
                     {
-                        using (new ColorScope(Color.red, s.name == UISwitchSetDrawer.activeSet))
+                        using (new ColorScope(Color.green, IsActive(s.name)))
                         {
                             if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {
                                 uiSwitch.Set(s.name);
-                                UISwitchSetDrawer.activeSet = s.name;
+                                SetActive(s.name);
+                            }
+                        }
+
+                        if (IsActive(s.name))
+                        {
+                            int labelWidth = 150;
+                            foreach (var t in s.trans)
+                            {
+                                var uiPos = HandleUtility.WorldToGUIPoint(t.position);
+                                uiPos.x -= labelWidth/ 2;
+                                uiPos.y -= 40;
+                                var rect = new Rect(uiPos, new Vector2(labelWidth, 20));
+                                GUI.Button(rect, t.name);
                             }
                         }
                     }
                 }
             }
             Handles.EndGUI();
+
+            foreach (var s in uiSwitch.switches)
+            {
+                if (IsActive(s.name))
+                {
+                    foreach (var t in s.trans)
+                    {
+                        var pos = Handles.PositionHandle(t.position, t.rotation);
+                        if (pos != t.position)
+                        {
+                            t.position = pos;
+                            EditorUtil.SetDirty(t);
+                            EditorUtil.SetDirty(uiSwitch);
+                        }
+                    }
+                }
+            }
         }
 
         public override void OnInspectorGUI()

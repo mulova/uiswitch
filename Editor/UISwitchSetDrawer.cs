@@ -14,7 +14,6 @@ namespace mulova.ui
     {
         private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
         private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
-        internal static string activeSet;
 
         public static readonly Color SelectedColor = Color.green;
         public static readonly Color ChangedSelectedColor = Color.red;
@@ -80,7 +79,7 @@ namespace mulova.ui
             var n = p.FindPropertyRelative("name");
             var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
             Color c = GUI.color;
-            if (n.stringValue == activeSet)
+            if (UISwitchInspector.IsActive(n.stringValue))
             {
                 c = UpdatePos(p)? ChangedSelectedColor: SelectedColor;
             }
@@ -91,7 +90,7 @@ namespace mulova.ui
                 {
                     if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
                     {
-                        activeSet = n.stringValue;
+                        UISwitchInspector.SetActive(n.stringValue);
                         var script = p.serializedObject.targetObject as UISwitch;
                         script.Set(n.stringValue);
                     }
