@@ -6,13 +6,15 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
+using UnityEngine;
+using Assert = UnityEngine.Assertions.Assert;
+#if !STANDALONE
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.commons;
-using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Ex;
-using Assert = UnityEngine.Assertions.Assert;
+#endif
 
 namespace mulova.ui
 {

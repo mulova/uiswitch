@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+#if !STANDALONE
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.unicore;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Ex;
+#endif
 
 namespace mulova.ui
 {
     [CustomPropertyDrawer(typeof(UISwitchPreset))]
     public class UISwitchPresetDrawer : PropertyDrawer
     {
-        private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>();
+        private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>(); //
 
         private PopupReorder GetKeysDrawer(SerializedProperty p)
         {

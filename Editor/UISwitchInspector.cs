@@ -2,9 +2,11 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using mulova.unicore;
+#if !STANDALONE
 using System.Collections.Generic.Ex;
+using mulova.unicore;
 using mulova.commons;
+#endif
 
 namespace mulova.ui
 {
@@ -78,7 +80,7 @@ namespace mulova.ui
                         GUILayout.Label("Preset");
                         foreach (var p in uiSwitch.preset)
                         {
-                            using (new ColorScope(Color.green, IsPreset(p.keys)))
+                            using (new ColorScope(Color.green, IsPreset(p.keys))) //
                             {
                                 if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(200)))
                                 {
@@ -95,7 +97,7 @@ namespace mulova.ui
                     GUILayout.Label("Option");
                     foreach (var s in uiSwitch.switches)
                     {
-                        using (new ColorScope(Color.green, IsActive(s.name)))
+                        using (new ColorScope(Color.green, IsActive(s.name))) //
                         {
                             if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {
@@ -131,7 +133,7 @@ namespace mulova.ui
                         if (pos != t.position)
                         {
                             t.position = pos;
-                            EditorUtil.SetDirty(t);
+                            EditorUtil.SetDirty(t); //
                             EditorUtil.SetDirty(uiSwitch);
                         }
                     }

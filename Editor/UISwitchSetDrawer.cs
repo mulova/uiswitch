@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
+#if !STANDALONE
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.unicore;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Ex;
-using Object = UnityEngine.Object;
+#endif
 
 namespace mulova.ui
 {

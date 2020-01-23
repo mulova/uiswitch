@@ -5,10 +5,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Ex;
-using System.Text.Ex;
 using UnityEngine;
 using UnityEngine.Events;
+#if !STANDALONE
+using System.Ex;
+using System.Text.Ex;
+#endif
 
 namespace mulova.ui
 {

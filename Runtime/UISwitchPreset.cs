@@ -4,7 +4,9 @@
 //----------------------------------------------
 
 using System;
+#if !STANDALONE
 using System.Ex;
+#endif
 
 namespace mulova.ui
 {
