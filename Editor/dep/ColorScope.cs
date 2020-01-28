@@ -3,21 +3,24 @@ using System;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-public class ColorScope : IDisposable
+namespace mulova.ui
 {
-    private Color old;
-    public ColorScope(Color c, bool apply = true)
+    internal class ColorScope : IDisposable
     {
-        old = GUI.color;
-        if (apply)
+        private Color old;
+        public ColorScope(Color c, bool apply = true)
         {
-            GUI.color = c;
+            old = GUI.color;
+            if (apply)
+            {
+                GUI.color = c;
+            }
         }
-    }
 
-    public void Dispose()
-    {
-        GUI.color = old;
+        public void Dispose()
+        {
+            GUI.color = old;
+        }
     }
 }
 #endif

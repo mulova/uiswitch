@@ -3,51 +3,56 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(EnumPopupAttribute))]
-public class EnumPopupDrawer : PropertyDrawer
+namespace mulova.ui
 {
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(EnumPopupAttribute))]
+    internal class EnumPopupDrawer : PropertyDrawer
     {
-        EnumPopupAttribute attr = attribute as EnumPopupAttribute;
-        var typeVar = property.serializedObject.FindProperty(attr.enumTypeVar);
-        if (typeVar != null)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var enumType = ReflectionUtil.GetType(typeVar.stringValue);
-            bool isEnum = false;
-            if (enumType != null)
+            EnumPopupAttribute attr = attribute as EnumPopupAttribute;
+            var typeVar = property.serializedObject.FindProperty(attr.enumTypeVar);
+            if (typeVar != null)
             {
-                try
+                var enumType = ReflectionUtil.GetType(typeVar.stringValue);
+                bool isEnum = false;
+                if (enumType != null)
                 {
-                    Enum e1 = (Enum)enumType.GetEnumValues().GetValue(0);
-                    if (!property.stringValue.IsEmpty())
+                    try
                     {
-                        e1 = (Enum)Enum.Parse(enumType, property.stringValue, true);
+                        Enum e1 = (Enum)enumType.GetEnumValues().GetValue(0);
+                        if (!property.stringValue.IsEmpty())
+                        {
+                            e1 = (Enum)Enum.Parse(enumType, property.stringValue, true);
+                        }
+                        Enum e2 = EditorGUI.EnumPopup(position, label, e1);
+                        if (e1 != e2)
+                        {
+                            property.stringValue = e2.ToString();
+                        }
+                        isEnum = true;
                     }
-                    Enum e2 = EditorGUI.EnumPopup(position, label, e1);
-                    if (e1 != e2)
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+                    catch
                     {
-                        property.stringValue = e2.ToString();
                     }
-                    isEnum = true;
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
                 }
-                #pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
+                if (!isEnum)
                 {
+                    var newStr = EditorGUI.TextField(position, label, property.stringValue);
+                    if (newStr != property.stringValue)
+                    {
+                        property.stringValue = newStr;
+                    }
                 }
-                #pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
             }
-            if (!isEnum)
+            else
             {
-                var newStr = EditorGUI.TextField(position, label, property.stringValue);
-                if (newStr != property.stringValue)
-                {
-                    property.stringValue = newStr;
-                }
+                EditorGUI.HelpBox(position, "Invalid EnumType Variable Name: " + attr.enumTypeVar, MessageType.Error);
             }
-        } else
-        {
-            EditorGUI.HelpBox(position, "Invalid EnumType Variable Name: " + attr.enumTypeVar, MessageType.Error);
         }
     }
 }
+
 #endif

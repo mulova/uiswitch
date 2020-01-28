@@ -3,31 +3,34 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-public static class ReflectionUtil
+namespace mulova.ui
 {
-    private static int assemblyCounts;
-    private static Dictionary<string, Type> types;
-
-    public static Type GetType(string fullName)
+    public static class ReflectionUtil
     {
-        if (fullName.IsEmpty())
+        private static int assemblyCounts;
+        private static Dictionary<string, Type> types;
+
+        public static Type GetType(string fullName)
         {
-            return null;
-        }
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        if (assemblyCounts != assemblies.Length)
-        {
-            assemblyCounts = assemblies.Length;
-            types = new Dictionary<string, Type>();
-            foreach (Assembly assembly in assemblies)
+            if (fullName.IsEmpty())
             {
-                foreach (Type type in assembly.GetTypes())
+                return null;
+            }
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            if (assemblyCounts != assemblies.Length)
+            {
+                assemblyCounts = assemblies.Length;
+                types = new Dictionary<string, Type>();
+                foreach (Assembly assembly in assemblies)
                 {
-                    types[type.FullName] = type;
+                    foreach (Type type in assembly.GetTypes())
+                    {
+                        types[type.FullName] = type;
+                    }
                 }
             }
+            return types.Get(fullName);
         }
-        return types.Get(fullName);
     }
 }
 #endif

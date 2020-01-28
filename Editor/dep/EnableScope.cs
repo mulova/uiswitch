@@ -2,18 +2,22 @@
 using System;
 using UnityEngine;
 
-public class EnableScope : IDisposable
+namespace mulova.ui
 {
-    private bool enabled;
-    public EnableScope(bool e)
+    internal class EnableScope : IDisposable
     {
-        enabled = GUI.enabled;
-        GUI.enabled = e;
-    }
+        private bool enabled;
+        public EnableScope(bool e)
+        {
+            enabled = GUI.enabled;
+            GUI.enabled = e;
+        }
 
-    public void Dispose()
-    {
-        GUI.enabled = enabled;
+        public void Dispose()
+        {
+            GUI.enabled = enabled;
+        }
     }
 }
+
 #endif

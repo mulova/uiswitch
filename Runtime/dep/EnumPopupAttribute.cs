@@ -1,11 +1,17 @@
-﻿using UnityEngine;
+﻿#if STANDALONE
+using UnityEngine;
 
-public class EnumPopupAttribute : PropertyAttribute
+namespace mulova.ui
 {
-    public readonly string enumTypeVar;
-    
-    public EnumPopupAttribute(string enumVar)
+    public class EnumPopupAttribute : PropertyAttribute
     {
-        this.enumTypeVar = enumVar;
+        public readonly string enumTypeVar;
+        
+        public EnumPopupAttribute(string enumVar)
+        {
+            this.enumTypeVar = enumVar;
+        }
     }
 }
+
+#endif

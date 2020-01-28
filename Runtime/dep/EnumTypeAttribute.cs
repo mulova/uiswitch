@@ -1,5 +1,10 @@
-﻿using UnityEngine;
+﻿#if STANDALONE
+using UnityEngine;
 
-public class EnumTypeAttribute : PropertyAttribute
+namespace mulova.ui
 {
+    public class EnumTypeAttribute : PropertyAttribute
+    {
+    }
 }
+#endif
