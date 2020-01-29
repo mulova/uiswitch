@@ -10,6 +10,7 @@ using UnityEngine.Events;
 #if !STANDALONE
 using System.Ex;
 using System.Text.Ex;
+using mulova.unicore;
 #endif
 
 namespace mulova.ui

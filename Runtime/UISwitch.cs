@@ -13,6 +13,7 @@ using Assert = UnityEngine.Assertions.Assert;
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.commons;
+using mulova.unicore;
 using UnityEngine.Ex;
 #endif
 
