@@ -100,7 +100,7 @@ namespace mulova.ui
                 {
                     if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
                     {
-                        UISwitchInspector.SetActive(n.stringValue);
+                        UISwitchInspector.Activate(n.stringValue, !UISwitchInspector.IsActive(n.stringValue));
                         var script = p.serializedObject.targetObject as UISwitch;
                         script.Set(n.stringValue);
                     }

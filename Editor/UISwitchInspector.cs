@@ -44,6 +44,17 @@ namespace mulova.ui
             }
         }
 
+        internal static void Activate(string id, bool active)
+        {
+            if (active)
+            {
+                activeSet.Add(id);
+            } else
+            {
+                activeSet.Remove(id);
+            }
+        }
+
         internal static bool IsActive(string active)
         {
             return activeSet.Contains(active);
