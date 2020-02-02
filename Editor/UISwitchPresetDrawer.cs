@@ -55,6 +55,9 @@ namespace mulova.ui
                     }
                     EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
                 }
+                // indentation
+                lines[1].x += 30;
+                lines[1].width -= 30;
                 var drawer = GetKeysDrawer(property);
                 drawer.Draw(lines[1]);
             }

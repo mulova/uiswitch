@@ -85,6 +85,7 @@ namespace mulova.ui
             var n = p.FindPropertyRelative("name");
             var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
             var boundsLeft = bounds[1];
+            // indentation
             boundsLeft.x += 30;
             boundsLeft.width -= 30;
             Color c = GUI.color;

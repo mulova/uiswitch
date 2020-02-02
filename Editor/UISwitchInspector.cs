@@ -147,14 +147,14 @@ namespace mulova.ui
             DrawDefaultInspector();
             if (!uiSwitch.showTrans)
             {
-                if (GUILayout.Button("Add Transform"))
+                if (GUILayout.Button("Show Transforms"))
                 {
                     uiSwitch.showTrans = true;
                 }
             }
             if (!uiSwitch.showAction)
             {
-                if (GUILayout.Button("Add Action"))
+                if (GUILayout.Button("Show Actions"))
                 {
                     uiSwitch.showAction = true;
                 }
