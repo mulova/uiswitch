@@ -13,7 +13,6 @@ namespace mulova.ui
     [CustomEditor(typeof(UISwitch))]
     public class UISwitchInspector : Editor
     {
-        public bool autoRemove;
         private UISwitch uiSwitch;
         internal static bool exclusive = true;
         private double changedTime = double.MaxValue;
@@ -50,11 +49,14 @@ namespace mulova.ui
             return activeSet.Contains(active);
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             uiSwitch = (UISwitch)target;
             EditorApplication.update += OnUpdate;
             changedTime = double.MaxValue;
+
+            uiSwitch.showTrans = uiSwitch.switches.Find(s => s.trans.Count > 0) != null;
+            uiSwitch.showAction = uiSwitch.switches.Find(s => s.action.GetPersistentEventCount() > 0) != null;
         }
 
         private void OnDisable()
@@ -62,7 +64,6 @@ namespace mulova.ui
             EditorApplication.update -= OnUpdate;
         }
 
-        
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
@@ -143,11 +144,21 @@ namespace mulova.ui
 
         public override void OnInspectorGUI()
         {
-            if (autoRemove)
-            {
-                RemoveUnused();
-            }
             DrawDefaultInspector();
+            if (!uiSwitch.showTrans)
+            {
+                if (GUILayout.Button("Add Transform"))
+                {
+                    uiSwitch.showTrans = true;
+                }
+            }
+            if (!uiSwitch.showAction)
+            {
+                if (GUILayout.Button("Add Action"))
+                {
+                    uiSwitch.showAction = true;
+                }
+            }
         }
 
         void OnUpdate()
@@ -172,7 +183,6 @@ namespace mulova.ui
             }
         }
 
-
         public static bool[] GetVisibilityUnion(UISwitch uiSwitch)
         {
             bool[] union = new bool[uiSwitch.objs.Count];
@@ -183,7 +193,7 @@ namespace mulova.ui
                 if (set.Contains(s.visibility))
                 {
                     uiSwitch.switches[i] = new UISwitchSet();
-                    EditorUtil_SetDirty(uiSwitch);
+                    EditorUtil.SetDirty(uiSwitch);
                 }
                 set.Add(uiSwitch.switches[i].visibility);
                 for (int j = 0; j < s.visibility.Count; ++j)
@@ -206,33 +216,8 @@ namespace mulova.ui
                     {
                         uiSwitch.switches[j].visibility.RemoveAt(i);
                     }
-                    EditorUtil_SetDirty(uiSwitch);
+                    EditorUtil.SetDirty(uiSwitch);
                 }
-            }
-        }
-
-        public static void EditorUtil_SetDirty(Object o)
-        {
-            if (Application.isPlaying || o == null)
-            {
-                return;
-            }
-            GameObject go = null;
-            if (o is GameObject)
-            {
-                go = o as GameObject;
-            }
-            else if (o is Component)
-            {
-                go = (o as Component).gameObject;
-            }
-            if (go != null && go.scene.IsValid())
-            {
-                EditorSceneManager.MarkSceneDirty(go.scene);
-            }
-            else
-            {
-                EditorUtility.SetDirty(o);
             }
         }
     }

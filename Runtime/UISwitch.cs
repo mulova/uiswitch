@@ -28,6 +28,8 @@ namespace mulova.ui
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
         [SerializeField] public List<UISwitchSet> switches = new List<UISwitchSet>();
         [SerializeField] public List<UISwitchPreset> preset = new List<UISwitchPreset>();
+        public bool showTrans { get; set; } = false; // editor only
+        public bool showAction { get; set; } = false; // editor only
 
         private UISwitchSet DUMMY = new UISwitchSet();
         private HashSet<string> keySet = new HashSet<string>();

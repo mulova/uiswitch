@@ -59,6 +59,7 @@ namespace mulova.ui
                         return false;
                     }
                     var sel = Selection.activeGameObject.transform;
+                    // check duplicate
                     for (int i=0; i<trans.arraySize; ++i)
                     {
                         if (trans.GetArrayElementAtIndex(i).objectReferenceValue == sel)
@@ -66,7 +67,9 @@ namespace mulova.ui
                             return false;
                         }
                     }
-                    return true;
+                    // check if in visibility array
+                    var objs = p.serializedObject.FindProperty("objs");
+                    return IsDuplicate(objs, Selection.activeObject);
                 };
                 tPool[p.propertyPath] = t;
             }
@@ -76,10 +79,14 @@ namespace mulova.ui
         private double changedTime;
         protected override void OnGUI(SerializedProperty p, Rect bound)
         {
+            var uiSwitch = p.serializedObject.targetObject as UISwitch;
             // Draw Name
             var bounds = bound.SplitByHeights(lineHeight);
             var n = p.FindPropertyRelative("name");
             var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
+            var boundsLeft = bounds[1];
+            boundsLeft.x += 30;
+            boundsLeft.width -= 30;
             Color c = GUI.color;
             if (UISwitchInspector.IsActive(n.stringValue))
             {
@@ -103,26 +110,27 @@ namespace mulova.ui
 
             // Draw Visibility
             var visibility = GetVisibilityDrawer(p);
-            bounds[1].x += 30;
-            bounds[1].width -= 30;
-            var objBound = bounds[1];
-            objBound.height = visibility.GetHeight();
-            visibility.Draw(objBound);
 
-            var trans = GetTransDrawer(p);
-            var tBound = objBound;
-            using (new ColorScope(c))
+            var objBounds = boundsLeft.SplitByHeights((int)visibility.GetHeight());
+            boundsLeft = objBounds[1];
+            visibility.Draw(objBounds[0]);
+
+            if (uiSwitch.showTrans)
             {
-                tBound.height = trans.GetHeight();
-                tBound.y += objBound.height;
-                trans.Draw(tBound);
+                var trans = GetTransDrawer(p);
+                var tBound = boundsLeft.SplitByHeights((int)trans.GetHeight());
+                boundsLeft = tBound[1];
+                using (new ColorScope(c))
+                {
+                    trans.Draw(tBound[0]);
+                }
             }
 
-            var actionProperty = p.FindPropertyRelative("action");
-            var aBound = tBound;
-            aBound.height = EditorGUI.GetPropertyHeight(actionProperty);
-            aBound.y += tBound.height;
-            EditorGUI.PropertyField(aBound, actionProperty);
+            if (uiSwitch.showAction)
+            {
+                var actionProperty = p.FindPropertyRelative("action");
+                EditorGUI.PropertyField(boundsLeft, actionProperty);
+            }
         }
 
         private bool UpdatePos(SerializedProperty property)
@@ -153,13 +161,19 @@ namespace mulova.ui
 
         public override float GetPropertyHeight(SerializedProperty p, GUIContent label)
         {
-            var visibility = GetVisibilityDrawer(p);
+            var uiSwitch = p.serializedObject.targetObject as UISwitch;
             var separator = 10;
-            var trans = GetTransDrawer(p);
-            return visibility.GetHeight()
-                + trans.GetHeight()
-                + EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action"))
-                + lineHeight + separator;
+            float height = GetVisibilityDrawer(p).GetHeight();
+            if (uiSwitch.showTrans)
+            {
+                height += GetTransDrawer(p).GetHeight();
+            }
+            if (uiSwitch.showAction)
+            {
+                height += EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action"));
+            }
+            height += lineHeight + separator;
+            return height;
         }
 
         private bool IsDuplicate(SerializedProperty arr, Object o)
