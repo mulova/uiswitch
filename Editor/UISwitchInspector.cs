@@ -2,10 +2,13 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using System;
 #if !STANDALONE
 using System.Collections.Generic.Ex;
 using mulova.unicore;
 using mulova.commons;
+using UnityEditorInternal;
+using System.Linq;
 #endif
 
 namespace mulova.ui
@@ -153,23 +156,113 @@ namespace mulova.ui
             }
         }
 
+        private ObjPropertyReorder<GameObject> diffList;
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            if (!uiSwitch.showTrans)
+            if (uiSwitch.switches.Count == 0)
             {
-                if (GUILayout.Button("Show Transforms"))
+                EditorGUILayout.Space(30);
+                EditorGUILayout.Separator();
+
+                if (diffList == null)
                 {
-                    uiSwitch.showTrans = true;
+                    diffList = new ObjPropertyReorder<GameObject>(serializedObject, "objs");
+                    diffList.title = "Diff Roots";
+                }
+                serializedObject.Update();
+                diffList.Draw();
+                if (uiSwitch.objs.Count >= 2)
+                {
+                    if (GUILayout.Button("Extract Diff"))
+                    {
+                        CreateMissingObject();
+                        EditorUtil.SetDirty(uiSwitch);
+                        //diffList.serializedProperty.ClearArray();
+                    }
+                }
+                serializedObject.ApplyModifiedProperties();
+            } else if (uiSwitch.showTrans || uiSwitch.showAction)
+            {
+                EditorGUILayout.Space(30);
+                EditorGUILayout.Separator();
+                if (!uiSwitch.showTrans)
+                {
+                    if (GUILayout.Button("Show Transforms"))
+                    {
+                        uiSwitch.showTrans = true;
+                    }
+                }
+                if (!uiSwitch.showAction)
+                {
+                    if (GUILayout.Button("Show Actions"))
+                    {
+                        uiSwitch.showAction = true;
+                    }
                 }
             }
-            if (!uiSwitch.showAction)
+
+        }
+
+        private void CreateMissingObject()
+        {
+            var trans = uiSwitch.objs.ConvertAll(o=> o.transform);
+            
+            for (int i1=0; i1<trans.Count; ++i1)
             {
-                if (GUILayout.Button("Show Actions"))
+                for (int i2=0; i2 < trans.Count; ++i2)
                 {
-                    uiSwitch.showAction = true;
+                    if (i1 == i2) { continue; }
+                    for (int j=0; j<trans[i1].childCount; ++j)
+                    {
+                        var c1 = trans[i1].GetChild(j);
+                        var c2 = j < trans[i2].childCount ? trans[i2].GetChild(j): null;
+                        if (c1.name != c2?.name)
+                        {
+                            if (IsFirstExtra(c1, c2))
+                            {
+                                CloneSibling(c1, c2, trans[i2]);
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        private static void CloneSibling(Transform c1, Transform c2, Transform parent)
+        {
+            if (c1 != null)
+            {
+                var newChild1 = Instantiate(c1, parent, false);
+                newChild1.name = c1.name;
+                Undo.RegisterCreatedObjectUndo(newChild1.gameObject, c1.name);
+                if (c2 != null)
+                {
+                    newChild1.SetSiblingIndex(c2.GetSiblingIndex());
+                }
+            }
+        }
+
+        private bool IsFirstExtra(Transform c1, Transform c2)
+        {
+            if (c1 == null)
+            {
+                return false;
+            }
+            if (c2 == null)
+            {
+                return true;
+            }
+            var parent = c1.parent;
+            int i = c1.GetSiblingIndex()+1;
+            while (i < parent.childCount)
+            {
+                if (parent.GetChild(i).name == c2.name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         void OnUpdate()
