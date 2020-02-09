@@ -168,15 +168,27 @@ namespace mulova.ui
                 if (diffList == null)
                 {
                     diffList = new ObjPropertyReorder<GameObject>(serializedObject, "objs");
+                    diffList.onRemove = OnRemoveObject;
                     diffList.title = "Diff Roots";
+
+                    void OnRemoveObject(int index)
+                    {
+                        var objs = serializedObject.FindProperty("objs");
+                        objs.DeleteArrayElementAtIndex(index); // remove index
+                        serializedObject.ApplyModifiedProperties();
+                    }
                 }
                 serializedObject.Update();
                 diffList.Draw();
                 if (uiSwitch.objs.Count >= 2)
                 {
-                    if (GUILayout.Button("Extract Diff"))
+                    var duplicates = GameObjectDiff.GetDuplicateSiblingNames(uiSwitch.objs);
+                    if (duplicates.Count() > 0)
                     {
-                        CreateMissingObject();
+                        EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
+                    } else if (GUILayout.Button("Extract Diff"))
+                    {
+                        GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
                         EditorUtil.SetDirty(uiSwitch);
                         //diffList.serializedProperty.ClearArray();
                     }
@@ -202,45 +214,6 @@ namespace mulova.ui
                 }
             }
 
-        }
-
-        private void CreateMissingObject()
-        {
-            var trans = uiSwitch.objs.ConvertAll(o=> o.transform);
-            
-            for (int i1=0; i1<trans.Count; ++i1)
-            {
-                for (int i2=0; i2 < trans.Count; ++i2)
-                {
-                    if (i1 == i2) { continue; }
-                    for (int j=0; j<trans[i1].childCount; ++j)
-                    {
-                        var c1 = trans[i1].GetChild(j);
-                        var c2 = j < trans[i2].childCount ? trans[i2].GetChild(j): null;
-                        if (c1.name != c2?.name)
-                        {
-                            if (IsFirstExtra(c1, c2))
-                            {
-                                CloneSibling(c1, c2, trans[i2]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void CloneSibling(Transform c1, Transform c2, Transform parent)
-        {
-            if (c1 != null)
-            {
-                var newChild1 = Instantiate(c1, parent, false);
-                newChild1.name = c1.name;
-                Undo.RegisterCreatedObjectUndo(newChild1.gameObject, c1.name);
-                if (c2 != null)
-                {
-                    newChild1.SetSiblingIndex(c2.GetSiblingIndex());
-                }
-            }
         }
 
         private bool IsFirstExtra(Transform c1, Transform c2)
