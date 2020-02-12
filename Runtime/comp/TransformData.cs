@@ -4,50 +4,41 @@ using UnityEngine;
 namespace mulova.ui
 {
     [Serializable]
-    public struct TransformData : ICompData<Transform>
+    public struct TransformData : ICompData
     {
         public Vector3 pos;
+        public bool active;
+        public Transform trans;
 
-        public static TransformData[] GetDiff(Transform[] comps)
+        public Type type => typeof(Transform);
+
+        public Component target
         {
-            var arr = new TransformData[comps.Length];
-            bool diff = false;
-            for (int i=0; i<arr.Length; ++i)
-            {
-                arr[i].Collect(comps[i]);
-                if (!diff && i != 0 && !arr[i].Equals(arr[0]))
-                {
-                    diff = true;
-                }
-            }
-            if (diff)
-            {
-                return arr;
-            } else
-            {
-                return null;
-            }
+            get { return trans; }
         }
 
-        public void ApplyTo(Transform t)
+        public void ApplyTo(Component c)
         {
+            var t = c as Transform;
             t.localPosition = pos;
         }
 
-        public void Collect(Transform t)
+        public void Collect(Component c)
         {
-            pos = t.localPosition;
+            trans = c as Transform;
+            pos = trans.localPosition;
+            active = trans.gameObject.activeSelf;
         }
 
         public override bool Equals(object obj)
         {
             var that = (TransformData)obj;
-            return this.pos == that.pos;
+            return this.pos == that.pos && this.active == that.active;
         }
 
         public override int GetHashCode()
         {
-            return pos.GetHashCode();
+            return pos.GetHashCode() + active.GetHashCode();
         }
     }
 }

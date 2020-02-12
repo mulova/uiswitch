@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using System;
 #if !STANDALONE
 using System.Collections.Generic.Ex;
 using mulova.unicore;
 using mulova.commons;
-using UnityEditorInternal;
-using System.Linq;
 #endif
 
 namespace mulova.ui
@@ -70,7 +66,7 @@ namespace mulova.ui
             changedTime = double.MaxValue;
 
             uiSwitch.showTrans = uiSwitch.switches.Find(s => s.trans.Count > 0) != null;
-            uiSwitch.showAction = uiSwitch.switches.Find(s => s.action.GetPersistentEventCount() > 0) != null;
+            uiSwitch.showAction = uiSwitch.switches.Find(s => s.action != null && s.action.GetPersistentEventCount() > 0) != null;
         }
 
         private void OnDisable()
@@ -180,20 +176,46 @@ namespace mulova.ui
                 }
                 serializedObject.Update();
                 diffList.Draw();
+                serializedObject.ApplyModifiedProperties();
                 if (uiSwitch.objs.Count >= 2)
                 {
+                    serializedObject.Update();
                     var duplicates = GameObjectDiff.GetDuplicateSiblingNames(uiSwitch.objs);
-                    if (duplicates.Count() > 0)
+                    if (duplicates.Count > 0)
                     {
                         EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
                     } else if (GUILayout.Button("Extract Diff"))
                     {
+                        Undo.RecordObject(uiSwitch, "Diff");
+                        uiSwitch.switches = new List<UISwitchSet>();
                         GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
+
+                        // just set data for the first object
+                        var o = uiSwitch.objs[0];
+                        var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
+                        List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
+                        var ui = o.GetComponent<UISwitch>();
+                        if (ui == null)
+                        {
+                            ui = o.AddComponent<UISwitch>();
+                            Undo.RegisterCreatedObjectUndo(ui, o.name);
+                        }
+                        ui.objs = tDiffs[0].ConvertAll(d => d.target.gameObject);
+
+                        for (int i=0; i<tDiffs.Count; ++i)
+                        {
+                            var s = new UISwitchSet();
+                            s.name = (i + 1).ToString();
+                            s.data = diffs[i];
+                            s.trans = tDiffs[0].ConvertAll(t => t.trans);
+                            s.pos = tDiffs[0].ConvertAll(t => t.trans.localPosition);
+                            s.visibility = tDiffs[i].ConvertAll(t => t.active);
+                            ui.switches.Add(s);
+                        }
                         EditorUtil.SetDirty(uiSwitch);
                         //diffList.serializedProperty.ClearArray();
                     }
                 }
-                serializedObject.ApplyModifiedProperties();
             } else if (uiSwitch.showTrans || uiSwitch.showAction)
             {
                 EditorGUILayout.Space(30);

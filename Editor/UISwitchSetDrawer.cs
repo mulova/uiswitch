@@ -94,19 +94,27 @@ namespace mulova.ui
                 c = UpdatePos(p)? ChangedSelectedColor: SelectedColor;
             }
 
+            // Draw Title
             using (new EnableScope(!n.stringValue.IsEmpty()))
             {
                 using (new ColorScope(c))
                 {
                     if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
                     {
-                        UISwitchInspector.Activate(n.stringValue, !UISwitchInspector.IsActive(n.stringValue));
+                        Undo.RecordObjects(uiSwitch.objs.ToArray(), "switch");
+                        bool hasPreset = !uiSwitch.preset.IsEmpty();
+                        if (!hasPreset)
+                        {
+                            UISwitchInspector.SetActive(n.stringValue, n.stringValue);
+                        } else
+                        {
+                            UISwitchInspector.Activate(n.stringValue, !UISwitchInspector.IsActive(n.stringValue));
+                        }
                         var script = p.serializedObject.targetObject as UISwitch;
                         script.Set(n.stringValue);
                     }
                 }
             }
-
             EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
 
             // Draw Visibility
@@ -116,10 +124,11 @@ namespace mulova.ui
             boundsLeft = objBounds[1];
             visibility.Draw(objBounds[0]);
 
+            // Draw Transform
             if (uiSwitch.showTrans)
             {
                 var trans = GetTransDrawer(p);
-                var tBound = boundsLeft.SplitByHeights((int)trans.GetHeight());
+                var tBound = boundsLeft.SplitByHeights(transHeight);
                 boundsLeft = tBound[1];
                 using (new ColorScope(c))
                 {
@@ -127,6 +136,14 @@ namespace mulova.ui
                 }
             }
 
+            // Draw ICompData
+            var dataBounds = boundsLeft.SplitByHeights(dataHeight);
+            boundsLeft = dataBounds[1];
+            var dataProperty = p.FindPropertyRelative("data");
+            EditorGUI.PropertyField(dataBounds[0], dataProperty);
+
+
+            // Draw Actions
             if (uiSwitch.showAction)
             {
                 var actionProperty = p.FindPropertyRelative("action");
@@ -160,19 +177,21 @@ namespace mulova.ui
             return false;
         }
 
+        private int dataHeight;
+        private int transHeight;
+        private int actionHeight;
+        private int visHeight;
         public override float GetPropertyHeight(SerializedProperty p, GUIContent label)
         {
             var uiSwitch = p.serializedObject.targetObject as UISwitch;
             var separator = 10;
-            float height = GetVisibilityDrawer(p).GetHeight();
-            if (uiSwitch.showTrans)
-            {
-                height += GetTransDrawer(p).GetHeight();
-            }
-            if (uiSwitch.showAction)
-            {
-                height += EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action"));
-            }
+            visHeight = (int)GetVisibilityDrawer(p).GetHeight();
+            dataHeight = (int)EditorGUI.GetPropertyHeight(p.FindPropertyRelative("data"));
+            float height = visHeight + dataHeight; 
+            transHeight = uiSwitch.showTrans? (int)GetTransDrawer(p).GetHeight(): 0;
+            height += transHeight;
+            actionHeight = uiSwitch.showAction? (int)EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action")): 0;
+            height += actionHeight;
             height += lineHeight + separator;
             return height;
         }

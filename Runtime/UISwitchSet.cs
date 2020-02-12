@@ -22,6 +22,7 @@ namespace mulova.ui
         public List<bool> visibility = new List<bool>();
         public List<Transform> trans = new List<Transform>();
         public List<Vector3> pos = new List<Vector3>();
+        [SerializeReference] public List<ICompData> data = new List<ICompData>();
         public UnityEvent action;
 
         public bool isValid

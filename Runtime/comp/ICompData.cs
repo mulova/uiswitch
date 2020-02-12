@@ -1,9 +1,14 @@
-﻿namespace mulova.ui
+﻿using System;
+using UnityEngine;
+
+namespace mulova.ui
 {
-    public interface ICompData<T>
+    public interface ICompData
     {
-        void ApplyTo(T o);
-        void Collect(T o);
+        Type type { get; }
+        Component target { get; }
+        void ApplyTo(Component c);
+        void Collect(Component c);
     }
 }
 
