@@ -248,7 +248,8 @@ namespace mulova.ui
                 s.visibility = oDiffs[i].ConvertAll(t => t.active);
                 ui.switches.Add(s);
             }
-            EditorUtil.SetDirty(uiSwitch);
+            Undo.DestroyObjectImmediate(uiSwitch);
+            Selection.activeGameObject = o;
             //diffList.serializedProperty.ClearArray();
         }
 
