@@ -7,7 +7,8 @@ namespace mulova.ui
     public struct TransformData : ICompData
     {
         public Vector3 pos;
-        public bool active;
+        public Quaternion rot;
+        public Vector3 scale;
         public Transform trans;
 
         public Type type => typeof(Transform);
@@ -22,24 +23,32 @@ namespace mulova.ui
         {
             var t = c as Transform;
             t.localPosition = pos;
+            t.localRotation = rot;
+            t.localScale = scale;
         }
 
         public void Collect(Component c)
         {
             trans = c as Transform;
             pos = trans.localPosition;
-            active = trans.gameObject.activeSelf;
+            rot = trans.localRotation;
+            scale = trans.localScale;
         }
 
         public override bool Equals(object obj)
         {
             var that = (TransformData)obj;
-            return this.pos == that.pos && this.active == that.active;
+            return this.pos == that.pos
+             && this.rot == that.rot
+             && this.scale == that.scale;
         }
 
         public override int GetHashCode()
         {
-            return pos.GetHashCode() + active.GetHashCode();
+            return pos.GetHashCode()
+             + rot.GetHashCode()
+             + scale.GetHashCode()
+             + trans.name.GetHashCode();
         }
     }
 }

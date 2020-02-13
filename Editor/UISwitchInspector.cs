@@ -72,6 +72,7 @@ namespace mulova.ui
         private void OnDisable()
         {
             EditorApplication.update -= OnUpdate;
+            activeSet.Clear();
         }
 
         private void OnSceneGUI()
@@ -186,46 +187,11 @@ namespace mulova.ui
                         EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
                     } else if (GUILayout.Button("Extract Diff"))
                     {
-                        Undo.RecordObject(uiSwitch, "Diff");
-                        uiSwitch.switches = new List<UISwitchSet>();
-                        GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
-
-                        // just set data for the first object
-                        var o = uiSwitch.objs[0];
-                        var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
-                        List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
-                        // remove TransformData from diffs
-                        for (int i=0; i<diffs.Count; ++i)
-                        {
-                            foreach (var t in tDiffs[i])
-                            {
-                                diffs[i].Remove(t);
-                            }
-                        }
-
-                        var ui = o.GetComponent<UISwitch>();
-                        if (ui == null)
-                        {
-                            ui = o.AddComponent<UISwitch>();
-                            Undo.RegisterCreatedObjectUndo(ui, o.name);
-                        }
-                        ui.objs = tDiffs[0].ConvertAll(d => d.target.gameObject);
-
-                        for (int i=0; i<tDiffs.Count; ++i)
-                        {
-                            var s = new UISwitchSet();
-                            s.name = (i + 1).ToString();
-                            s.data = diffs[i];
-                            s.trans = tDiffs[0].ConvertAll(t => t.trans);
-                            s.pos = tDiffs[i].ConvertAll(t => t.pos);
-                            s.visibility = tDiffs[i].ConvertAll(t => t.active);
-                            ui.switches.Add(s);
-                        }
-                        EditorUtil.SetDirty(uiSwitch);
-                        //diffList.serializedProperty.ClearArray();
+                        ExtractDiff();
                     }
                 }
-            } else if (uiSwitch.showTrans || uiSwitch.showAction)
+            }
+            else if (uiSwitch.showTrans || uiSwitch.showAction)
             {
                 EditorGUILayout.Space(30);
                 EditorGUILayout.Separator();
@@ -245,6 +211,45 @@ namespace mulova.ui
                 }
             }
 
+        }
+
+        private void ExtractDiff()
+        {
+            Undo.RecordObject(uiSwitch, "Diff");
+            uiSwitch.switches = new List<UISwitchSet>();
+            GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
+
+            // just set data for the first object
+            var o = uiSwitch.objs[0];
+            var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
+            List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
+            List<List<ObjData>> oDiffs = GameObjectDiff.FindAll<ObjData>(diffs);
+            // remove ObjData, TransformData from diffs
+            for (int i = 0; i < diffs.Count; ++i)
+            {
+                diffs[i] = diffs[i].FindAll(d=> !(d is TransformData || d is ObjData));
+            }
+
+            var ui = o.GetComponent<UISwitch>();
+            if (ui == null)
+            {
+                ui = o.AddComponent<UISwitch>();
+                Undo.RegisterCreatedObjectUndo(ui, o.name);
+            }
+            ui.objs = oDiffs[0].ConvertAll(d => d.obj);
+
+            for (int i = 0; i < tDiffs.Count; ++i)
+            {
+                var s = new UISwitchSet();
+                s.name = (i + 1).ToString();
+                s.data = diffs[i];
+                s.trans = tDiffs[0].ConvertAll(t => t.trans);
+                s.pos = tDiffs[i].ConvertAll(t => t.pos);
+                s.visibility = oDiffs[i].ConvertAll(t => t.active);
+                ui.switches.Add(s);
+            }
+            EditorUtil.SetDirty(uiSwitch);
+            //diffList.serializedProperty.ClearArray();
         }
 
         private bool IsFirstExtra(Transform c1, Transform c2)

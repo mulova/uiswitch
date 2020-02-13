@@ -12,28 +12,6 @@ namespace mulova.ui
 {
     public static class GameObjectDiff
     {
-        public static List<List<ICompData>> CreateDiff(List<GameObject> roots)
-        {
-            var parents = roots.ConvertAll(o => o.transform);
-            var store = parents.ConvertAll(p => new List<ICompData>());
-            GetDiffRecursively(parents, store);
-            return store;
-        }
-
-        private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store)
-        {
-            var comps = parents.ConvertAll(p => p.GetComponents<Component>());
-            for (int i = 0; i < comps[0].Length; ++i)
-            {
-                GetDiff(comps, i, store);
-            }
-            for (int i=0; i < parents[0].childCount; ++i)
-            {
-                var children = parents.ConvertAll(p => p.GetChild(i));
-                GetDiffRecursively(children, store);
-            }
-        }
-
         public static void CreateMissingSiblings(List<GameObject> roots)
         {
             var parents = roots.ConvertAll(o => o.transform);
@@ -66,19 +44,44 @@ namespace mulova.ui
             }
         }
 
+        public static List<List<ICompData>> CreateDiff(List<GameObject> roots)
+        {
+            var parents = roots.ConvertAll(o => o.transform);
+            var store = parents.ConvertAll(p => new List<ICompData>());
+            GetDiffRecursively(parents, store, false);
+            return store;
+        }
+
+        private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool objDiff = true)
+        {
+            var comps = parents.ConvertAll(p => p.GetComponents<Component>());
+            if (objDiff)
+            {
+                GetObjDiff(parents, store);
+            }
+            for (int i = 0; i < comps[0].Length; ++i)
+            {
+                GetComponentDiff(comps, i, store);
+            }
+            for (int i=0; i < parents[0].childCount; ++i)
+            {
+                var children = parents.ConvertAll(p => p.GetChild(i));
+                GetDiffRecursively(children, store);
+            }
+        }
 
         /// <summary>
         /// return Component data if all components' data are the same.
         /// </summary>
         /// <returns>The diff.</returns>
         /// <param name="comps">return Component data if all components' data are the same.</param>
-        private static void GetDiff(List<Component[]> comps, int index, List<List<ICompData>> store)
+        private static void GetComponentDiff(List<Component[]> comps, int index, List<List<ICompData>> store)
         {
             var arr = new ICompData[comps.Count];
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = GetComponentData(comps[i][index]);
+                arr[i] = GetComponentData(comps[i][index], comps[i][index].GetType());
                 if (!diff && i != 0 && !arr[i].Equals(arr[0]))
                 {
                     diff = true;
@@ -94,8 +97,30 @@ namespace mulova.ui
             }
         }
 
+        private static void GetObjDiff(List<Transform> objs, List<List<ICompData>> store)
+        {
+            var arr = new ICompData[objs.Count];
+            bool diff = false;
+            for (int i = 0; i < arr.Length; ++i)
+            {
+                arr[i] = GetComponentData(objs[i], typeof(GameObject));
+                if (!diff && i != 0 && !arr[i].Equals(arr[0]))
+                {
+                    diff = true;
+                }
+            }
+            if (diff)
+            {
+                for (int i = 0; i < arr.Length; ++i)
+                {
+                    arr[i].target = arr[0].target;
+                    store[i].Add(arr[i]);
+                }
+            }
+        }
+
         private static Dictionary<Type, Type> pool;
-        private static ICompData GetComponentData(Component c)
+        private static ICompData GetComponentData(Component c, Type type)
         {
             // collect BuildProcessors
             if (pool == null)
@@ -111,7 +136,7 @@ namespace mulova.ui
                     }
                 }
             }
-            var dataType = pool.Get(c.GetType());
+            var dataType = pool.Get(type);
             if (dataType != null)
             {
                 var o = Activator.CreateInstance(dataType) as ICompData;
