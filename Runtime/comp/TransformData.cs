@@ -15,6 +15,7 @@ namespace mulova.ui
         public Component target
         {
             get { return trans; }
+            set { trans = value as Transform; }
         }
 
         public void ApplyTo(Component c)

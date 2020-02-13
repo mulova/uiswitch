@@ -88,6 +88,7 @@ namespace mulova.ui
             {
                 for (int i=0; i<arr.Length; ++i)
                 {
+                    arr[i].target = arr[0].target;
                     store[i].Add(arr[i]);
                 }
             }

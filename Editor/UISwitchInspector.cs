@@ -194,6 +194,15 @@ namespace mulova.ui
                         var o = uiSwitch.objs[0];
                         var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
                         List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
+                        // remove TransformData from diffs
+                        for (int i=0; i<diffs.Count; ++i)
+                        {
+                            foreach (var t in tDiffs[i])
+                            {
+                                diffs[i].Remove(t);
+                            }
+                        }
+
                         var ui = o.GetComponent<UISwitch>();
                         if (ui == null)
                         {
@@ -208,7 +217,7 @@ namespace mulova.ui
                             s.name = (i + 1).ToString();
                             s.data = diffs[i];
                             s.trans = tDiffs[0].ConvertAll(t => t.trans);
-                            s.pos = tDiffs[0].ConvertAll(t => t.trans.localPosition);
+                            s.pos = tDiffs[i].ConvertAll(t => t.pos);
                             s.visibility = tDiffs[i].ConvertAll(t => t.active);
                             ui.switches.Add(s);
                         }
