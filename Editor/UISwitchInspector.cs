@@ -189,17 +189,28 @@ namespace mulova.ui
                     {
                         EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
                     }
-                    else {
-                        var err = GameObjectDiff.GetComponentMismatch(uiSwitch.objs.ConvertAll(o => o.transform));
-                        if (err.Count == 0)
+                    else if (uiSwitch.switches.Count == 0)
+                    {
+                        if (GameObjectDiff.IsChildrenMatches(uiSwitch.objs.ConvertAll(o => o.transform)))
                         {
-                            if (GUILayout.Button("Extract Diff"))
+                            var err = GameObjectDiff.GetComponentMismatch(uiSwitch.objs.ConvertAll(o => o.transform));
+                            if (err.Count == 0)
                             {
-                                ExtractDiff();
+                                if (GUILayout.Button("Extract Diff"))
+                                {
+                                    ExtractDiff();
+                                }
+                            } else
+                            {
+                                EditorGUILayout.HelpBox("Component Mismatch\n" + err.Join(","), MessageType.Warning);
                             }
                         } else
                         {
-                            EditorGUILayout.HelpBox("Component Mismatch\n" + err.Join(","), MessageType.Warning);
+                            if (GUILayout.Button("Create Siblings"))
+                            {
+                                Undo.RecordObject(uiSwitch, "Diff");
+                                GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
+                            }
                         }
                     }
                 }
@@ -230,8 +241,6 @@ namespace mulova.ui
         {
             Undo.RecordObject(uiSwitch, "Diff");
             uiSwitch.switches = new List<UISwitchSet>();
-            GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
-
             // just set data for the first object
             var o = uiSwitch.objs[0];
             var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);

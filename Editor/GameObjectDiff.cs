@@ -175,6 +175,35 @@ namespace mulova.ui
             }
         }
 
+        public static bool IsChildrenMatches(IList<Transform> objs)
+        {
+            int childCount = objs[0].childCount;
+            for (int i = 1; i < objs.Count; ++i)
+            {
+                if (objs[i].childCount != childCount)
+                {
+                    return false;
+                }
+            }
+            Transform[] children = new Transform[objs.Count];
+            for (int c=0; c<childCount; ++c)
+            {
+                for (int i=0; i<objs.Count; ++i)
+                {
+                    children[i] = objs[i].GetChild(c);
+                    if (i != 0 && children[0].name != children[i].name)
+                    {
+                        return false;
+                    }
+                }
+                if (!IsChildrenMatches(children))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static List<string> GetComponentMismatch(List<Transform> objs)
         {
             List<string> err = new List<string>();
@@ -196,12 +225,12 @@ namespace mulova.ui
                     }
                 }
             }
-            for (int i=0; i<objs[0].childCount; ++i)
+            for (int c=0; c<objs[0].childCount; ++c)
             {
                 List<Transform> children = new List<Transform>();
-                for (int j=0; j<objs.Count; ++j)
+                for (int i=0; i<objs.Count; ++i)
                 {
-                    children.Add(objs[j].GetChild(i));
+                    children.Add(objs[i].GetChild(c));
                 }
                 err.AddRange(GetComponentMismatch(children));
             }
