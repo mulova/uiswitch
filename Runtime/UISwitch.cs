@@ -202,6 +202,7 @@ namespace mulova.ui
                     }
                     try
                     {
+                        e.data.ForEach(d => d.ApplyTo(d.target));
                         e.action.Invoke();
                     } catch (Exception ex)
                     {

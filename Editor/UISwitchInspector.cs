@@ -135,18 +135,21 @@ namespace mulova.ui
             }
             Handles.EndGUI();
 
-            foreach (var s in uiSwitch.switches)
+            if (locked)
             {
-                if (IsActive(s.name))
+                foreach (var s in uiSwitch.switches)
                 {
-                    foreach (var t in s.trans)
+                    if (IsActive(s.name))
                     {
-                        var pos = Handles.PositionHandle(t.position, t.rotation);
-                        if (pos != t.position)
+                        foreach (var t in s.trans)
                         {
-                            t.position = pos;
-                            EditorUtil.SetDirty(t); //
-                            EditorUtil.SetDirty(uiSwitch);
+                            var pos = Handles.PositionHandle(t.position, t.rotation);
+                            if (pos != t.position)
+                            {
+                                t.position = pos;
+                                EditorUtil.SetDirty(t); //
+                                EditorUtil.SetDirty(uiSwitch);
+                            }
                         }
                     }
                 }
