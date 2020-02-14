@@ -40,6 +40,27 @@ namespace mulova.ui
                 vPool[p.propertyPath] = v;
             }
             return v;
+
+            void OnDrawVisibility(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused)
+            {
+                var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as UISwitch);
+                using (new ContentColorScope(Color.gray, !union[index]))
+                {
+                    var bounds = rect.SplitByWidths(25, 25);
+                    // draw index
+                    EditorGUI.PrefixLabel(bounds[0], new GUIContent(index.ToString()));
+                    // draw bool
+                    EditorGUI.PropertyField(bounds[1], item, new GUIContent(""));
+                    var objs = item.serializedObject.FindProperty("objs");
+                    var obj = objs.GetArrayElementAtIndex(index);
+                    var oldObj = obj.objectReferenceValue;
+                    EditorGUI.PropertyField(bounds[2], obj, new GUIContent(""));
+                    if (obj.objectReferenceValue == null || IsDuplicate(objs, obj.objectReferenceValue))
+                    {
+                        obj.objectReferenceValue = oldObj;
+                    }
+                }
+            }
         }
 
         private PropertyReorder<Transform> GetTransDrawer(SerializedProperty p)
@@ -142,7 +163,6 @@ namespace mulova.ui
             var dataProperty = p.FindPropertyRelative("data");
             EditorGUI.PropertyField(dataBounds[0], dataProperty);
 
-
             // Draw Actions
             if (uiSwitch.showAction)
             {
@@ -207,27 +227,6 @@ namespace mulova.ui
                 }
             }
             return false;
-        }
-
-        private void OnDrawVisibility(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused)
-        {
-            var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as UISwitch);
-            using (new ContentColorScope(Color.gray, !union[index]))
-            {
-                var bounds = rect.SplitByWidths(25, 25);
-                // draw index
-                EditorGUI.PrefixLabel(bounds[0], new GUIContent(index.ToString()));
-                // draw bool
-                EditorGUI.PropertyField(bounds[1], item, new GUIContent(""));
-                var objs = item.serializedObject.FindProperty("objs");
-                var obj = objs.GetArrayElementAtIndex(index);
-                var oldObj = obj.objectReferenceValue;
-                EditorGUI.PropertyField(bounds[2], obj, new GUIContent(""));
-                if (obj.objectReferenceValue == null || IsDuplicate(objs, obj.objectReferenceValue))
-                {
-                    obj.objectReferenceValue = oldObj;
-                }
-            }
         }
 
         private void OnReorderObject(SerializedProperty sect, int i1, int i2)

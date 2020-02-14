@@ -185,9 +185,19 @@ namespace mulova.ui
                     if (duplicates.Count > 0)
                     {
                         EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
-                    } else if (GUILayout.Button("Extract Diff"))
-                    {
-                        ExtractDiff();
+                    }
+                    else {
+                        var err = GameObjectDiff.GetComponentMismatch(uiSwitch.objs.ConvertAll(o => o.transform));
+                        if (err.Count == 0)
+                        {
+                            if (GUILayout.Button("Extract Diff"))
+                            {
+                                ExtractDiff();
+                            }
+                        } else
+                        {
+                            EditorGUILayout.HelpBox("Component Mismatch\n" + err.Join(","), MessageType.Warning);
+                        }
                     }
                 }
             }

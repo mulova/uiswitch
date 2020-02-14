@@ -39,7 +39,6 @@ namespace mulova.ui
                         clone.gameObject.SetActive(false);
                         ++insertIndex;
                     }
-
                 }
             }
         }
@@ -159,21 +158,54 @@ namespace mulova.ui
                 }
             }
             return dup;
+
+            List<string> GetDuplicateSiblingNames(Transform parent)
+            {
+                List<string> d = new List<string>();
+                HashSet<string> names = new HashSet<string>();
+                foreach (Transform child in parent)
+                {
+                    if (!names.Add(child.name))
+                    {
+                        d.Add(child.name);
+                    }
+                    d.AddRange(GetDuplicateSiblingNames(child));
+                }
+                return d;
+            }
         }
 
-        public static List<string> GetDuplicateSiblingNames(Transform parent)
+        public static List<string> GetComponentMismatch(List<Transform> objs)
         {
-            List<string> dup = new List<string>();
-            HashSet<string> names = new HashSet<string>();
-            foreach (Transform child in parent)
+            List<string> err = new List<string>();
+            var c0 = objs[0].GetComponents<Component>();
+            for (int i=1; i<objs.Count; ++i)
             {
-                if (!names.Add(child.name))
+                var c = objs[i].GetComponents<Component>();
+                if (c0.Length != c.Length)
                 {
-                    dup.Add(child.name);
+                    err.Add($"{objs[0].name}({c0.Length}) <-> {objs[i].name}({c.Length})");
+                } else
+                {
+                    for (int j=0; j<c.Length; ++j)
+                    {
+                        if (c0[j].GetType() != c[j].GetType())
+                        {
+                            err.Add($"{objs[0].name}.{c0[j].GetType().Name} <-> {c[j].GetType().Name}");
+                        }
+                    }
                 }
-                dup.AddRange(GetDuplicateSiblingNames(child));
             }
-            return dup;
+            for (int i=0; i<objs[0].childCount; ++i)
+            {
+                List<Transform> children = new List<Transform>();
+                for (int j=0; j<objs.Count; ++j)
+                {
+                    children.Add(objs[j].GetChild(i));
+                }
+                err.AddRange(GetComponentMismatch(children));
+            }
+            return err;
         }
 
         public static int GetSiblingIndex(string objName, Transform parent)
