@@ -22,7 +22,9 @@ namespace mulova.ui
         public List<bool> visibility = new List<bool>();
         public List<Transform> trans = new List<Transform>();
         public List<Vector3> pos = new List<Vector3>();
+#if UNITY_2019_1_OR_NEWER
         [SerializeReference] [SerializeReferenceButton] public List<ICompData> data = new List<ICompData>();
+#endif
         public UnityEvent action;
 
         public bool isValid

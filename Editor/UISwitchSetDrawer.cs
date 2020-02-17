@@ -169,8 +169,10 @@ namespace mulova.ui
             // Draw ICompData
             var dataBounds = boundsLeft.SplitByHeights(dataHeight);
             boundsLeft = dataBounds[1];
+#if UNITY_2019_1_OR_NEWER
             var dataProperty = p.FindPropertyRelative("data");
             EditorGUI.PropertyField(dataBounds[0], dataProperty, true);
+#endif
         }
 
         private bool UpdatePos(SerializedProperty property)
@@ -208,12 +210,18 @@ namespace mulova.ui
             var uiSwitch = p.serializedObject.targetObject as UISwitch;
             var separator = 10;
             visHeight = (int)GetVisibilityDrawer(p).GetHeight();
+            float height = visHeight;
+
+#if UNITY_2019_1_OR_NEWER
             dataHeight = (int)EditorGUI.GetPropertyHeight(p.FindPropertyRelative("data"));
-            float height = visHeight + dataHeight; 
+            height += dataHeight;
+#endif
             transHeight = uiSwitch.showTrans? (int)GetTransDrawer(p).GetHeight(): 0;
             height += transHeight;
+
             actionHeight = uiSwitch.showAction? (int)EditorGUI.GetPropertyHeight(p.FindPropertyRelative("action")): 0;
             height += actionHeight;
+
             height += lineHeight + separator;
             return height;
         }

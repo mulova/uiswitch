@@ -202,7 +202,9 @@ namespace mulova.ui
                     }
                     try
                     {
+#if UNITY_2019_1_OR_NEWER
                         e.data.ForEach(d => d.ApplyTo(d.target));
+#endif
                         e.action.Invoke();
                     } catch (Exception ex)
                     {
