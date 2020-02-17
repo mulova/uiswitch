@@ -262,7 +262,9 @@ namespace mulova.ui
             {
                 var s = new UISwitchSet();
                 s.name = (i + 1).ToString();
+#if UNITY_2019_1_OR_NEWER
                 s.data = diffs[i];
+#endif
                 s.trans = tDiffs[0].ConvertAll(t => t.trans);
                 s.pos = tDiffs[i].ConvertAll(t => t.pos);
                 s.visibility = oDiffs[i].ConvertAll(t => t.active);
