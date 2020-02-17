@@ -30,7 +30,7 @@ namespace mulova.ui
         public RemoveDelegate onRemove = i => { };
         public ChangeDelegate onChange = () => { };
         public ReorderDelegate onReorder = (i1, i2) => { };
-        public ElementHeightCallbackDelegate getElementHeight;
+        public ElementHeightCallbackDelegate getElementHeight = null;
         public CanAddDelegate canAdd = () => true;
 
         // backup
@@ -51,7 +51,7 @@ namespace mulova.ui
             }
         }
 
-        public bool displayIndex;
+        public bool displayIndex = false;
 
         public bool displayAdd
         {
