@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-#if !STANDALONE
+#if CORE_LIB
 using System.Collections.Generic.Ex;
 using mulova.unicore;
 using mulova.commons;
@@ -156,7 +156,7 @@ namespace mulova.ui
             }
         }
 
-        private ObjPropertyReorder<GameObject> diffList;
+        private PropertyReorder<GameObject> diffList;
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
@@ -167,7 +167,7 @@ namespace mulova.ui
 
                 if (diffList == null)
                 {
-                    diffList = new ObjPropertyReorder<GameObject>(serializedObject, "objs");
+                    diffList = new PropertyReorder<GameObject>(serializedObject, "objs");
                     diffList.onRemove = OnRemoveObject;
                     diffList.title = "Diff Roots";
 

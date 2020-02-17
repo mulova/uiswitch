@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -17,33 +17,6 @@ namespace mulova.ui
                 typeSelector = new TypeSelector(typeof(Enum));
             }
             typeSelector.DrawSelector(position, property);
-            //var enumStr = property.stringValue;
-            //var enumType = ReflectionUtil.GetType(GetTypeString(property));
-            //if (enumType != null && enumType.IsEnum)
-            //{
-            //    Enum old = null;
-            //    try
-            //    {
-            //        old = (Enum)Enum.Parse(enumType, enumStr, true);
-            //    } catch (Exception ex)
-            //    {
-            //        old = (Enum)Enum.GetValues(enumType).GetValue(0);
-            //    }
-            //    Enum val = EditorGUI.EnumPopup(position, old);
-            //    if (val != old)
-            //    {
-            //        property.stringValue = val.ToString();
-            //        property.serializedObject.ApplyModifiedProperties();
-            //    }
-            //} else
-            //{
-            //    var val = EditorGUI.TextField(position, enumStr);
-            //    if (val != enumStr)
-            //    {
-            //        property.stringValue = val.ToString();
-            //        property.serializedObject.ApplyModifiedProperties();
-            //    }
-            //}
         }
     }
 }

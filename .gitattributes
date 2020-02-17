@@ -1,16 +1,16 @@
 LightingData.asset binary
 NavMesh.asset binary
 
-*.cs        text
+*.cs        text eol=lf
 *.meta      text eol=lf
 *.prefab    text eol=lf
 *.asset     text eol=lf
 *.mat       text eol=lf
-*.m         text
-*.mm        text
-*.h         text
-*.c         text
-*.cpp       text
+*.m         text eol=lf
+*.mm        text eol=lf
+*.h         text eol=lf
+*.c         text eol=lf
+*.cpp       text eol=lf
 *.playable  text eol=lf
 *.unity     text eol=lf
 *.anim      text eol=lf

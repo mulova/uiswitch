@@ -4,7 +4,7 @@
 //----------------------------------------------
 
 using System;
-#if !STANDALONE
+#if CORE_LIB
 using System.Ex;
 #endif
 

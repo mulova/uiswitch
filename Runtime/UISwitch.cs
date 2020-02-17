@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
-#if !STANDALONE
+#if CORE_LIB
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.commons;

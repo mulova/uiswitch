@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-#if !STANDALONE
+#if CORE_LIB
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.unicore;

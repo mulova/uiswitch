@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using Object = UnityEngine.Object;
 
 namespace mulova.ui

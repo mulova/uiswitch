@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using System;
 
 namespace mulova.ui

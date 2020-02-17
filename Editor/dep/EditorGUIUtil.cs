@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;

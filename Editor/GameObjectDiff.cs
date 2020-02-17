@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using System.Ex;
 using System;
 using Object = UnityEngine.Object;
-#if !STANDALONE
+#if CORE_LIB
+using System.Ex;
 using System.Collections.Generic.Ex;
 #endif
 

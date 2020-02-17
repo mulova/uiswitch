@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-#if !STANDALONE
+#if CORE_LIB
 using System.Collections.Generic.Ex;
 using System.Text.Ex;
 using mulova.unicore;

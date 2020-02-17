@@ -1,7 +1,8 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace mulova.ui
 {
     public static class Extension
     {
+        public static ILogger log = Debug.unityLogger;
         public static void AddAll<T>(this HashSet<T> hashSet, IEnumerable<T> objs)
         {
             foreach (T t in objs)
@@ -170,6 +172,30 @@ namespace mulova.ui
                 }
             }
             return str.ToString();
+        }
+
+        public static List<Type> FindTypes(this Type type)
+        {
+            List<Type> found = new List<Type>();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
+            {
+                try
+                {
+                    foreach (Type t in assembly.GetTypes())
+                    {
+                        if (type.IsAssignableFrom(t))
+                        {
+                            found.Add(t);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex);
+                }
+            }
+            return found;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using System;
 using UnityEditor;
 using UnityEngine;

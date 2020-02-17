@@ -1,4 +1,4 @@
-﻿#if STANDALONE
+﻿#if !CORE_LIB
 using System;
 using UnityEngine;
 using Color = UnityEngine.Color;

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if !STANDALONE
+#if CORE_LIB
 using System.Ex;
 using System.Text.Ex;
 using mulova.unicore;
