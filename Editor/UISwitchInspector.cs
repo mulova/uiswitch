@@ -162,7 +162,7 @@ namespace mulova.ui
             DrawDefaultInspector();
             if (uiSwitch.switches.Count == 0)
             {
-                EditorGUILayout.Space(30);
+                EditorGUILayout.Space();
                 EditorGUILayout.Separator();
 
                 if (diffList == null)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_2019_3_OR_NEWER
+using System;
 public static class SerializeReferenceInspectorUtility
 {
     public static Type GetRealTypeFromTypename(string stringType)
@@ -18,3 +19,4 @@ public static class SerializeReferenceInspectorUtility
         return (typeAssemblyName,  typeClassName);
     }  
 }
+#endif
