@@ -1,5 +1,14 @@
 # Unity library for WISIWIG UI
-- 2019.3 or higher ( SerializeReference attribute is needed )
-- Turn on / off GameObjects
-- Transform is recorded
-- Custom Extension for scripts ( such as UGUI, NGUI )
+- Automatically extract and generate diff set
+- Turning on / off GameObjects
+- Transform (Position, Rotation, Scale) can be recorded
+- Script data can be recoreded (Customizable by extending ICompData)
+
+
+# Environment
+- Unity 2019.3 or higher ( 'SerializeReference' attribute is required )
+
+
+# Citation
+- SerializeRefereneInspectorUI from https://forum.unity.com/threads/serializereference-genericserializedreferenceinspectorui.813366/
+
