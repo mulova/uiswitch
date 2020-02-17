@@ -157,18 +157,20 @@ namespace mulova.ui
                 }
             }
 
+            // Draw Actions
+            if (uiSwitch.showAction)
+            {
+                var actionBounds = boundsLeft.SplitByHeights(actionHeight);
+                boundsLeft = actionBounds[1];
+                var actionProperty = p.FindPropertyRelative("action");
+                EditorGUI.PropertyField(actionBounds[0], actionProperty);
+            }
+
             // Draw ICompData
             var dataBounds = boundsLeft.SplitByHeights(dataHeight);
             boundsLeft = dataBounds[1];
             var dataProperty = p.FindPropertyRelative("data");
-            EditorGUI.PropertyField(dataBounds[0], dataProperty);
-
-            // Draw Actions
-            if (uiSwitch.showAction)
-            {
-                var actionProperty = p.FindPropertyRelative("action");
-                EditorGUI.PropertyField(boundsLeft, actionProperty);
-            }
+            EditorGUI.PropertyField(dataBounds[0], dataProperty, true);
         }
 
         private bool UpdatePos(SerializedProperty property)

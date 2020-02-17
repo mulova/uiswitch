@@ -4,10 +4,10 @@ using UnityEngine;
 namespace mulova.ui
 {
     [Serializable]
-    public struct SpriteRendererData : ICompData
+    public class SpriteRendererData : ICompData
     {
-        public Sprite sprite;
         public SpriteRenderer rend;
+        public Sprite sprite;
 
         public Type type => typeof(SpriteRenderer);
 

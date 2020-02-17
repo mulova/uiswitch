@@ -215,9 +215,8 @@ namespace mulova.ui
                     }
                 }
             }
-            else if (uiSwitch.showTrans || uiSwitch.showAction)
+            if (uiSwitch.switches.Count > 0)
             {
-                EditorGUILayout.Space(30);
                 EditorGUILayout.Separator();
                 if (!uiSwitch.showTrans)
                 {
@@ -234,7 +233,6 @@ namespace mulova.ui
                     }
                 }
             }
-
         }
 
         private void ExtractDiff()

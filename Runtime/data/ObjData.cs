@@ -4,7 +4,7 @@ using UnityEngine;
 namespace mulova.ui
 {
     [Serializable]
-    public struct ObjData : ICompData
+    public class ObjData : ICompData
     {
         public bool active;
         public GameObject obj;
