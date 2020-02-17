@@ -1,9 +1,6 @@
 {
     "name": "mulova.ui.editor",
     "references": [
-        "mulova.commons",
-        "mulova.unicore",
-        "mulova.unicore.editor",
         "mulova.ui"
     ],
     "includePlatforms": [
@@ -15,5 +12,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

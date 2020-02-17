@@ -1,9 +1,6 @@
 {
     "name": "mulova.ui",
-    "references": [
-        "mulova.commons",
-        "mulova.unicore"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
