@@ -220,7 +220,7 @@ namespace mulova.ui
 
             if (log.IsLoggable(LogType.Log))
             {
-                log.Debug("{0}: switch {1}", name, keySet.Join(","));
+                log.Debug("UISwitch {0}", keySet.Join(","));
             }
             if (match != keySet.Count)
             {

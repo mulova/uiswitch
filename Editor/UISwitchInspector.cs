@@ -156,7 +156,7 @@ namespace mulova.ui
             }
         }
 
-        private PropertyReorder<GameObject> diffList;
+        private ObjPropertyReorder<GameObject> diffList;
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
@@ -167,7 +167,7 @@ namespace mulova.ui
 
                 if (diffList == null)
                 {
-                    diffList = new PropertyReorder<GameObject>(serializedObject, "objs");
+                    diffList = new ObjPropertyReorder<GameObject>(serializedObject, "objs");
                     diffList.onRemove = OnRemoveObject;
                     diffList.title = "Diff Roots";
 

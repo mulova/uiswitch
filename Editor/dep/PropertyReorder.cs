@@ -1,16 +1,17 @@
 ﻿#if !CORE_LIB
 using System;
+using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
-using Object = UnityEngine.Object;
-using static UnityEditorInternal.ReorderableList;
 using UnityEditorInternal;
+using UnityEngine;
+using static UnityEditorInternal.ReorderableList;
+using Object = UnityEngine.Object;
 
 namespace mulova.ui
 {
     internal class PropertyReorder<T>
     {
-        public delegate T CreateItemDelegate();
+        public delegate IList<T> CreateItemsDelegate();
         public delegate void DrawItemDelegate(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused);
         public delegate T GettemDelegate(SerializedProperty p);
         public delegate void SetItemDelegate(SerializedProperty p, T value);
@@ -22,14 +23,14 @@ namespace mulova.ui
 
         public ReorderableList drawer { get; private set; }
 
-        public CreateItemDelegate createItem { private get; set; }
+        public CreateItemsDelegate createItems { private get; set; }
         public DrawItemDelegate drawItem { private get; set; }
         public GettemDelegate getItem { private get; set; }
         public SetItemDelegate setItem { private get; set; }
         public AddDelegate onAdd = i => { };
         public RemoveDelegate onRemove = i => { };
         public ChangeDelegate onChange = () => { };
-        public ReorderDelegate onReorder = (i1, i2) => { };
+        public ReorderDelegate onReorder = (i1,i2) => { };
         public ElementHeightCallbackDelegate getElementHeight = null;
         public CanAddDelegate canAdd = () => true;
 
@@ -47,7 +48,7 @@ namespace mulova.ui
             set
             {
                 _title = value;
-                drawer.headerHeight = _title.IsEmpty() ? 0 : headerHeight;
+                drawer.headerHeight = _title.IsEmpty()? 0: headerHeight;
             }
         }
 
@@ -55,36 +56,30 @@ namespace mulova.ui
 
         public bool displayAdd
         {
-            get
-            {
+            get {
                 return drawer.displayAdd;
             }
-            set
-            {
+            set {
                 drawer.displayAdd = value;
             }
         }
 
         public bool displayRemove
         {
-            get
-            {
+            get {
                 return drawer.displayRemove;
             }
-            set
-            {
+            set {
                 drawer.displayRemove = value;
             }
         }
 
         public bool draggable
         {
-            get
-            {
+            get {
                 return drawer.draggable;
             }
-            set
-            {
+            set {
                 drawer.draggable = value;
             }
         }
@@ -99,8 +94,7 @@ namespace mulova.ui
 
         public T this[int i]
         {
-            get
-            {
+            get {
                 var e = drawer.serializedProperty.GetArrayElementAtIndex(i);
                 return getItem(e);
             }
@@ -117,8 +111,7 @@ namespace mulova.ui
 
         public int count
         {
-            get
-            {
+            get {
                 return drawer.serializedProperty.arraySize;
             }
         }
@@ -157,7 +150,7 @@ namespace mulova.ui
             this.drawer.onReorderCallbackWithDetails = _OnReorder;
             this.drawer.elementHeightCallback = GetElementHeight;
             this.drawer.onCanAddCallback = _CanAdd;
-            this.createItem = () => default(T);
+            this.createItems = () => new[] { default(T) };
 
             this.title = prop.displayName;
             // backup
@@ -175,10 +168,9 @@ namespace mulova.ui
                 if (getElementHeight != null)
                 {
                     return getElementHeight(index);
-                }
-                else
+                } else
                 {
-                    return EditorGUI.GetPropertyHeight(drawer.serializedProperty.GetArrayElementAtIndex(index)) + 5;
+                    return EditorGUI.GetPropertyHeight(drawer.serializedProperty.GetArrayElementAtIndex(index))+5;
                 }
             }
             else
@@ -227,8 +219,7 @@ namespace mulova.ui
                     {
                         dirty = true;
                         drawer.index = index;
-                    }
-                    else
+                    } else
                     {
                         int controlID = GUIUtility.GetControlID(FocusType.Keyboard, r);
                         if (controlID == GUIUtility.hotControl)
@@ -249,12 +240,16 @@ namespace mulova.ui
 
         private void _OnAdd(ReorderableList list)
         {
-            var index = list.index >= 0 ? list.index + 1 : list.count;
-            index = Math.Min(index, list.count);
-            list.serializedProperty.InsertArrayElementAtIndex(index);
-            list.index = index;
-            setItem?.Invoke(list.serializedProperty.GetArrayElementAtIndex(index), createItem());
-            onAdd(index);
+            var created = createItems();
+            foreach (var o in created)
+            {
+                var index = list.index >= 0? list.index+1: list.count;
+                index = Math.Min(index, list.count);
+                list.serializedProperty.InsertArrayElementAtIndex(index);
+                list.index = index;
+                setItem?.Invoke(list.serializedProperty.GetArrayElementAtIndex(index), o);
+                onAdd(index);
+            }
             SetDirty();
             EditorUtil.SetDirty(obj);
         }
@@ -301,4 +296,6 @@ namespace mulova.ui
         }
     }
 }
+
+
 #endif
