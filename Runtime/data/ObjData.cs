@@ -32,12 +32,12 @@ namespace mulova.ui
         public override bool Equals(object obj)
         {
             var that = (ObjData)obj;
-            return this.obj.name == that.obj.name && this.active == that.active;
+            return this.active == that.active;
         }
 
         public override int GetHashCode()
         {
-            return obj.name.GetHashCode() + active.GetHashCode();
+            return active.GetHashCode();
         }
     }
 }
