@@ -174,6 +174,22 @@ namespace mulova.ui
             return str.ToString();
         }
 
+        public static List<T> FindAll<T>(this IEnumerable<T> src, Predicate<T> predicate)
+        {
+            List<T> dst = new List<T>();
+            if (src != null)
+            {
+                foreach (T t in src)
+                {
+                    if (predicate(t))
+                    {
+                        dst.Add(t);
+                    }
+                }
+            }
+            return dst;
+        }
+
         public static List<Type> FindTypes(this Type type)
         {
             List<Type> found = new List<Type>();

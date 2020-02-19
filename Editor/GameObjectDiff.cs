@@ -51,17 +51,15 @@ namespace mulova.ui
             return store;
         }
 
-        private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool objDiff = true)
+        private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool includeTransformDiff = true)
         {
-            var comps = parents.ConvertAll(p => p.GetComponents<Component>());
-            if (objDiff)
-            {
-                GetObjDiff(parents, store);
-            }
+            GetVisibilityDiff(parents, store);
+            var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || c is Transform).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
                 GetComponentDiff(comps, i, store);
             }
+            // child diff
             for (int i=0; i < parents[0].childCount; ++i)
             {
                 var children = parents.ConvertAll(p => p.GetChild(i));
@@ -80,8 +78,8 @@ namespace mulova.ui
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = GetComponentData(comps[i][index], comps[i][index].GetType());
-                if (!diff && i != 0 && !arr[i].Equals(arr[0]))
+                arr[i] = dataGen.GetComponentData(comps[i][index], comps[i][index].GetType());
+                if (!diff && i != 0 && arr[i] != null && !arr[i].Equals(arr[0]))
                 {
                     diff = true;
                 }
@@ -96,13 +94,13 @@ namespace mulova.ui
             }
         }
 
-        private static void GetObjDiff(List<Transform> objs, List<List<ICompData>> store)
+        private static void GetVisibilityDiff(List<Transform> objs, List<List<ICompData>> store)
         {
             var arr = new ICompData[objs.Count];
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = GetComponentData(objs[i], typeof(GameObject));
+                arr[i] = dataGen.GetComponentData(objs[i], typeof(GameObject));
                 if (!diff && i != 0 && !arr[i].Equals(arr[0]))
                 {
                     diff = true;
@@ -118,32 +116,55 @@ namespace mulova.ui
             }
         }
 
-        private static Dictionary<Type, Type> pool;
-        private static ICompData GetComponentData(Component c, Type type)
+        private static CompDataGenerator dataGen = new CompDataGenerator();
+
+        public class CompDataGenerator
         {
-            // collect BuildProcessors
-            if (pool == null)
+            private Dictionary<Type, Type> pool;
+
+            public ICompData GetComponentData(Component c, Type type)
             {
-                pool = new Dictionary<Type, Type>();
-                List<Type> cls = typeof(ICompData).FindTypes();
-                foreach (Type t in cls)
+                var dataType = FindDataType(type);
+                if (dataType != null)
                 {
-                    if (!t.IsAbstract)
-                    {
-                        var ins = Activator.CreateInstance(t) as ICompData;
-                        pool[ins.type] = t;
-                    }
+                    var o = Activator.CreateInstance(dataType) as ICompData;
+                    o.Collect(c);
+                    return o;
+                } else
+                {
+                    return null;
                 }
             }
-            var dataType = pool.Get(type);
-            if (dataType != null)
+
+            public Type FindDataType(Type type)
             {
-                var o = Activator.CreateInstance(dataType) as ICompData;
-                o.Collect(c);
-                return o;
-            } else
-            {
-                return null;
+                // collect BuildProcessors
+                if (pool == null)
+                {
+                    pool = new Dictionary<Type, Type>();
+                    List<Type> cls = typeof(ICompData).FindTypes();
+                    foreach (Type t in cls)
+                    {
+                        if (!t.IsAbstract)
+                        {
+                            var ins = Activator.CreateInstance(t) as ICompData;
+                            pool[ins.type] = t;
+                        }
+                    }
+                }
+                var dataType = pool.Get(type);
+                var baseType = type.BaseType;
+                while (dataType == null && (baseType != null && baseType != typeof(Object) && baseType != baseType.BaseType))
+                {
+                    dataType = pool.Get(baseType);
+                    if (dataType != null)
+                    {
+                        pool[type] = dataType;
+                        break;
+                    }
+                    baseType = baseType.BaseType;
+                }
+                return dataType;
             }
         }
 
