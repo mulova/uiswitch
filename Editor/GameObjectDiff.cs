@@ -54,7 +54,7 @@ namespace mulova.ui
         private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool includeTransformDiff = true)
         {
             GetVisibilityDiff(parents, store);
-            var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || c is Transform).ToArray());
+            var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || !(c is Transform)).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
                 GetComponentDiff(comps, i, store);
