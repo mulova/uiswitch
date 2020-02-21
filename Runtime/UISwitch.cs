@@ -203,7 +203,22 @@ namespace mulova.ui
                     try
                     {
 #if UNITY_2019_1_OR_NEWER
-                        e.data.ForEach(d => d.ApplyTo(d.target));
+                        foreach (var d in e.data)
+                        {
+#if UNITY_EDITOR
+                            if (!Application.isPlaying)
+                            {
+                                UnityEditor.Undo.RecordObject(d.target, d.target.name);
+                            }
+#endif
+                            d.ApplyTo(d.target);
+#if UNITY_EDITOR
+                            if (!Application.isPlaying)
+                            {
+                                UnityEditor.EditorUtility.SetDirty(d.target);
+                            }
+#endif
+                        }
 #endif
                         e.action.Invoke();
                     } catch (Exception ex)

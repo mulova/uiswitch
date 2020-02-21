@@ -209,7 +209,8 @@ namespace mulova.ui
                             if (GUILayout.Button("Create Siblings"))
                             {
                                 Undo.RecordObject(uiSwitch, "Diff");
-                                GameObjectDiff.CreateMissingSiblings(uiSwitch.objs);
+                                var parents = uiSwitch.objs.ConvertAll(o => o.transform);
+                                GameObjectDiff.CreateMissingChildren(parents);
                             }
                         }
                     }
@@ -239,8 +240,9 @@ namespace mulova.ui
         {
             Undo.RecordObject(uiSwitch, "Diff");
             uiSwitch.switches = new List<UISwitchSet>();
+            var roots = uiSwitch.objs;
             // just set data for the first object
-            var o = uiSwitch.objs[0];
+            var o = roots[0];
             var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
             List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
             List<List<ObjData>> oDiffs = GameObjectDiff.FindAll<ObjData>(diffs);
@@ -261,7 +263,7 @@ namespace mulova.ui
             for (int i = 0; i < tDiffs.Count; ++i)
             {
                 var s = new UISwitchSet();
-                s.name = (i + 1).ToString();
+                s.name = roots[i].name;
 #if UNITY_2019_1_OR_NEWER
                 s.data = diffs[i];
 #endif
