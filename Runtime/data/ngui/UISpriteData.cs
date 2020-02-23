@@ -8,7 +8,7 @@ namespace mulova.ui
     public class UISpriteData : ICompData
     {
         public UISprite sprite;
-        public UIAtlas atlas;
+        [SerializeReference] public INGUIAtlas atlas;
         public string spriteName;
         public FillDirection fillDirection = FillDirection.Radial360;
         public float fillAmount = 1f;
@@ -73,6 +73,13 @@ namespace mulova.ui
         {
             return spriteName.GetHashCode()
                 + atlas?.GetHashCode() ?? 0
+                + fillDirection.GetHashCode()
+                + fillAmount.GetHashCode()
+                + invert.GetHashCode()
+                + flip.GetHashCode()
+                + applyGradient.GetHashCode()
+                + gradientTop.GetHashCode()
+                + gradientBottom.GetHashCode()
             ;
         }
     }
