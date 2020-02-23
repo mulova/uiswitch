@@ -68,13 +68,6 @@ namespace mulova.ui
             return (str.ToString(), paths, index);
         }
 
-        public static float Interpolate(this float val, float min, float max)
-        {
-            float diff = max - min;
-            float inter = diff * val;
-            return min + inter;
-        }
-
         public static List<Type> FindClasses(this Type type)
         {
             List<Type> found = new List<Type>();
