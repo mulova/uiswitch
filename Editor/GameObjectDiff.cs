@@ -13,34 +13,47 @@ namespace mulova.ui
     {
         private static CompDataGenerator dataGen = new CompDataGenerator();
 
-        public static void CreateMissingSiblings(List<GameObject> roots)
+        public static void CreateMissingChildren(List<Transform> roots)
         {
-            var parents = roots.ConvertAll(o => o.transform);
-            var children = GetChildUnion(parents);
+            var children = GetChildUnion(roots);
 
-            foreach (var p in parents)
+            foreach (var p in roots)
             {
                 int insertIndex = 0;
                 for (int ic = 0; ic < children.Count; ++ic)
                 {
                     var c = children[ic];
                     // find matching child
-                    bool found = false;
+                    Transform found = null;
                     for (int i = 0; i < p.childCount && !found; ++i)
                     {
                         if (p.GetChild(i).name == c.name)
                         {
                             insertIndex = i + 1;
-                            found = true;
+                            found = p.GetChild(i);
                         }
                     }
-                    if (!found)
+                    if (found == null)
                     {
                         var clone = CloneSibling(c, p, insertIndex);
                         clone.gameObject.SetActive(false);
                         ++insertIndex;
                     }
                 }
+            }
+
+            // sort children
+            for (int i=1; i<roots[0].childCount; ++i)
+            {
+                var c = roots[0].GetChild(i);
+                roots[i].Find(c.name).SetSiblingIndex(i);
+
+                var childRoots = new List<Transform>();
+                for (int j=0; j < roots.Count; ++j)
+                {
+                    childRoots.Add(roots[j].GetChild(i));
+                }
+                CreateMissingChildren(childRoots);
             }
         }
 

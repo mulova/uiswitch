@@ -2,11 +2,11 @@
 - Automatically extract and generate diff set
 - Turning on / off GameObjects
 - Transform (Position, Rotation, Scale) can be recorded
-- Script data can be recoreded (Customizable by extending ICompData)
+- Script difference can be recoreded (Customizable by extending ICompData)
 
 
-# Environment
-- Unity 2019.3 or higher ( 'SerializeReference' attribute is required )
+# Requirement
+- Unity 2019.3 or higher for extending script diff ( 'SerializeReference' attribute is required )
 
 
 # Citation
