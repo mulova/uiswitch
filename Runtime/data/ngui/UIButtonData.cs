@@ -8,7 +8,6 @@ namespace mulova.ui
     public class UIButtonData : ICompData
     {
         public UIButton button;
-        public Type type => typeof(UIButton);
         public string hoverSprite;
         public string pressedSprite;
         public string disabledSprite;
@@ -17,7 +16,10 @@ namespace mulova.ui
         public Color disabledColor = Color.grey;
         public float duration = 0.2f;
         public State state;
+        public bool enabled;
 
+        public Type type => typeof(UIButton);
+        public bool active => enabled;
 
         public Component target
         {
@@ -28,6 +30,7 @@ namespace mulova.ui
         public void ApplyTo(Component c)
         {
             var b = c as UIButton;
+            b.enabled = enabled;
             b.hoverSprite = hoverSprite;
             b.pressedSprite = pressedSprite;
             b.disabledSprite = disabledSprite;
@@ -41,6 +44,7 @@ namespace mulova.ui
         public void Collect(Component c)
         {
             button = c as UIButton;
+            enabled = button.enabled;
             hoverSprite = button.hoverSprite;
             pressedSprite = button.pressedSprite;
             disabledSprite = button.disabledSprite;
@@ -54,7 +58,8 @@ namespace mulova.ui
         public override bool Equals(object obj)
         {
             var that = (UIButtonData)obj;
-            return this.hoverSprite == that.hoverSprite
+            return this.enabled == that.enabled
+                && this.hoverSprite == that.hoverSprite
                 && this.pressedSprite == that.pressedSprite
                 && this.disabledSprite == that.pressedSprite
                 && this.hover == that.hover
@@ -67,7 +72,8 @@ namespace mulova.ui
 
         public override int GetHashCode()
         {
-            return hoverSprite?.GetHashCode() ?? 0
+            return enabled.GetHashCode() 
+                + hoverSprite?.GetHashCode() ?? 0
                 + pressedSprite?.GetHashCode() ?? 0
                 + disabledSprite?.GetHashCode() ?? 0
                 + hover.GetHashCode()

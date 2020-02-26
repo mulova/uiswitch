@@ -31,8 +31,10 @@ namespace mulova.ui
         public bool overflowEllipsis;
         public int overflowWidth;
         public Modifier modifier;
+        public bool enabled;
 
         public Type type => typeof(UILabel);
+        public bool active => enabled;
 
         public Component target
         {
@@ -43,6 +45,7 @@ namespace mulova.ui
         public void ApplyTo(Component c)
         {
             var l = c as UILabel;
+            lbl.enabled = enabled;
             lbl.color = color;
             lbl.text = text;
             lbl.fontSize = fontSize;
@@ -71,6 +74,7 @@ namespace mulova.ui
         public void Collect(Component c)
         {
             lbl = c as UILabel;
+            enabled = lbl.enabled;
             color = lbl.color;
             text = lbl.text;
             fontSize = lbl.fontSize;
@@ -100,6 +104,7 @@ namespace mulova.ui
         {
             var that = (UILabelData)obj;
             return this.text == that.text
+            && this.enabled == that.enabled
             && this.color == that.color
             && this.fontSize == that.fontSize
             && this.fontStyle == that.fontStyle
@@ -127,6 +132,7 @@ namespace mulova.ui
         public override int GetHashCode()
         {
             return text.GetHashCode() 
+            + enabled.GetHashCode()
             + color.GetHashCode()
             + fontSize.GetHashCode()
             + alignment.GetHashCode()

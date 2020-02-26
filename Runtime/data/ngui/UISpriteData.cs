@@ -17,8 +17,10 @@ namespace mulova.ui
         public bool applyGradient = false;
         public Color gradientTop = Color.white;
         public Color gradientBottom = new Color(0.7f, 0.7f, 0.7f);
+        public bool enabled;
 
         public System.Type type => typeof(UISprite);
+        public bool active => enabled;
 
         public Component target
         {
@@ -29,6 +31,7 @@ namespace mulova.ui
         public void ApplyTo(Component c)
         {
             var s = c as UISprite;
+            s.enabled = enabled;
             s.atlas = atlas;
             s.spriteName = spriteName;
             s.fillDirection = fillDirection;
@@ -43,6 +46,7 @@ namespace mulova.ui
         public void Collect(Component c)
         {
             sprite = c as UISprite;
+            enabled = sprite.enabled;
             atlas = sprite.atlas;
             spriteName = sprite.spriteName;
             fillDirection = sprite.fillDirection;
@@ -57,7 +61,8 @@ namespace mulova.ui
         public override bool Equals(object obj)
         {
             var that = (UISpriteData)obj;
-            return this.spriteName == that.spriteName
+            return this.enabled == that.enabled 
+                && this.spriteName == that.spriteName
                 && this.atlas == that.atlas
                 && this.fillDirection == that.fillDirection
                 && this.fillAmount.ApproximatelyEquals(that.fillAmount)
@@ -71,7 +76,8 @@ namespace mulova.ui
 
         public override int GetHashCode()
         {
-            return spriteName.GetHashCode()
+            return enabled.GetHashCode() 
+                + spriteName.GetHashCode()
                 + atlas?.GetHashCode() ?? 0
                 + fillDirection.GetHashCode()
                 + fillAmount.GetHashCode()
