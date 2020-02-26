@@ -67,7 +67,6 @@ namespace mulova.ui
 
         private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool includeTransformDiff = true)
         {
-            GetVisibilityDiff(parents, store);
             var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || !(c is Transform)).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
@@ -101,28 +100,6 @@ namespace mulova.ui
             if (diff)
             {
                 for (int i=0; i<arr.Length; ++i)
-                {
-                    arr[i].target = arr[0].target;
-                    store[i].Add(arr[i]);
-                }
-            }
-        }
-
-        private static void GetVisibilityDiff(List<Transform> objs, List<List<ICompData>> store)
-        {
-            var arr = new ICompData[objs.Count];
-            bool diff = false;
-            for (int i = 0; i < arr.Length; ++i)
-            {
-                arr[i] = dataGen.GetComponentData(objs[i], typeof(GameObject));
-                if (!diff && i != 0 && !arr[i].Equals(arr[0]))
-                {
-                    diff = true;
-                }
-            }
-            if (diff)
-            {
-                for (int i = 0; i < arr.Length; ++i)
                 {
                     arr[i].target = arr[0].target;
                     store[i].Add(arr[i]);
