@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using System.Linq;
 #if CORE_LIB
 using System.Ex;
 using System.Collections.Generic.Ex;
@@ -13,34 +14,47 @@ namespace mulova.ui
     {
         private static CompDataGenerator dataGen = new CompDataGenerator();
 
-        public static void CreateMissingSiblings(List<GameObject> roots)
+        public static void CreateMissingChildren(List<Transform> roots)
         {
-            var parents = roots.ConvertAll(o => o.transform);
-            var children = GetChildUnion(parents);
+            var children = GetChildUnion(roots);
 
-            foreach (var p in parents)
+            foreach (var p in roots)
             {
                 int insertIndex = 0;
                 for (int ic = 0; ic < children.Count; ++ic)
                 {
                     var c = children[ic];
                     // find matching child
-                    bool found = false;
+                    Transform found = null;
                     for (int i = 0; i < p.childCount && !found; ++i)
                     {
                         if (p.GetChild(i).name == c.name)
                         {
                             insertIndex = i + 1;
-                            found = true;
+                            found = p.GetChild(i);
                         }
                     }
-                    if (!found)
+                    if (found == null)
                     {
                         var clone = CloneSibling(c, p, insertIndex);
                         clone.gameObject.SetActive(false);
                         ++insertIndex;
                     }
                 }
+            }
+
+            // sort children
+            for (int i=1; i<roots[0].childCount; ++i)
+            {
+                var c = roots[0].GetChild(i);
+                roots[i].Find(c.name).SetSiblingIndex(i);
+
+                var childRoots = new List<Transform>();
+                for (int j=0; j < roots.Count; ++j)
+                {
+                    childRoots.Add(roots[j].GetChild(i));
+                }
+                CreateMissingChildren(childRoots);
             }
         }
 
@@ -54,7 +68,6 @@ namespace mulova.ui
 
         private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool includeTransformDiff = true)
         {
-            GetVisibilityDiff(parents, store);
             var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || !(c is Transform)).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
@@ -88,28 +101,6 @@ namespace mulova.ui
             if (diff)
             {
                 for (int i=0; i<arr.Length; ++i)
-                {
-                    arr[i].target = arr[0].target;
-                    store[i].Add(arr[i]);
-                }
-            }
-        }
-
-        private static void GetVisibilityDiff(List<Transform> objs, List<List<ICompData>> store)
-        {
-            var arr = new ICompData[objs.Count];
-            bool diff = false;
-            for (int i = 0; i < arr.Length; ++i)
-            {
-                arr[i] = dataGen.GetComponentData(objs[i], typeof(GameObject));
-                if (!diff && i != 0 && !arr[i].Equals(arr[0]))
-                {
-                    diff = true;
-                }
-            }
-            if (diff)
-            {
-                for (int i = 0; i < arr.Length; ++i)
                 {
                     arr[i].target = arr[0].target;
                     store[i].Add(arr[i]);
