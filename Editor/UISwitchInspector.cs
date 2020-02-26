@@ -242,23 +242,65 @@ namespace mulova.ui
             uiSwitch.switches = new List<UISwitchSet>();
             var roots = uiSwitch.objs;
             // just set data for the first object
-            var o = roots[0];
+            var root0 = roots[0];
             var diffs = GameObjectDiff.CreateDiff(uiSwitch.objs);
             List<List<TransformData>> tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
-            List<List<ObjData>> oDiffs = GameObjectDiff.FindAll<ObjData>(diffs);
             // remove ObjData, TransformData from diffs
             for (int i = 0; i < diffs.Count; ++i)
             {
-                diffs[i] = diffs[i].FindAll(d=> !(d is TransformData || d is ObjData));
+                diffs[i] = diffs[i].FindAll(d=> !(d is TransformData));
             }
 
-            var ui = o.GetComponent<UISwitch>();
+            var ui =root0.GetComponent<UISwitch>();
             if (ui == null)
             {
-                ui = o.AddComponent<UISwitch>();
-                Undo.RegisterCreatedObjectUndo(ui, o.name);
+                ui =root0.AddComponent<UISwitch>();
+                Undo.RegisterCreatedObjectUndo(ui,root0.name);
             }
-            ui.objs = oDiffs[0].ConvertAll(d => d.obj);
+            // Get Position Diffs
+            var vDiffs = new List<List<TransformData>>();
+            for (int i = 0; i < tDiffs.Count; ++i)
+            {
+                vDiffs.Add(new List<TransformData>());
+            }
+            for (int c = 0; c < tDiffs[0].Count; ++c)
+            {
+                bool diff = false;
+                for (int i = 1; i < tDiffs.Count && !diff; ++i)
+                {
+                    diff |= tDiffs[0][c].active != tDiffs[i][c].active;
+                }
+                if (diff)
+                {
+                    for (int i = 0; i < tDiffs.Count; ++i)
+                    {
+                        vDiffs[i].Add(tDiffs[i][c]);
+                    }
+                }
+            }
+            ui.objs = vDiffs[0].ConvertAll(v=> v.target.gameObject);
+
+            // Get Position Diffs
+            var posDiffs = new List<List<TransformData>>();
+            for (int i=0; i<tDiffs.Count; ++i)
+            {
+                posDiffs.Add(new List<TransformData>());
+            }
+            for (int c = 0; c < tDiffs[0].Count; ++c)
+            {
+                bool diff = false;
+                for (int i = 1; i < tDiffs.Count && !diff; ++i)
+                {
+                    diff |= !tDiffs[0][c].TransformEquals(tDiffs[i][c]);
+                }
+                if (diff)
+                {
+                    for (int i = 0; i < tDiffs.Count; ++i)
+                    {
+                        posDiffs[i].Add(tDiffs[i][c]);
+                    }
+                }
+            }
 
             for (int i = 0; i < tDiffs.Count; ++i)
             {
@@ -267,13 +309,13 @@ namespace mulova.ui
 #if UNITY_2019_1_OR_NEWER
                 s.data = diffs[i];
 #endif
-                s.trans = tDiffs[0].ConvertAll(t => t.trans);
-                s.pos = tDiffs[i].ConvertAll(t => t.pos);
-                s.visibility = oDiffs[i].ConvertAll(t => t.active);
+                s.trans = posDiffs[i].ConvertAll(t => t.trans);
+                s.pos = posDiffs[i].ConvertAll(t => t.pos);
+                s.visibility = tDiffs[i].ConvertAll(t => t.enabled);
                 ui.switches.Add(s);
             }
             Undo.DestroyObjectImmediate(uiSwitch);
-            Selection.activeGameObject = o;
+            Selection.activeGameObject =root0;
             //diffList.serializedProperty.ClearArray();
         }
 

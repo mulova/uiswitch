@@ -213,6 +213,21 @@ namespace mulova.ui
             }
             return found;
         }
+
+        public static bool ApproximatelyEquals(this Vector3 v1, Vector3 v2)
+        {
+            return Mathf.Approximately(v1.x, v2.x)
+                && Mathf.Approximately(v1.y, v2.y)
+                && Mathf.Approximately(v1.z, v2.z);
+        }
+
+        public static bool ApproximatelyEquals(this Quaternion first, Quaternion second)
+        {
+            return (Mathf.Approximately(first.x, second.x) && Mathf.Approximately(first.y, second.y)
+                && Mathf.Approximately(first.z, second.z) && Mathf.Approximately(first.w, second.w)) ||
+                (Mathf.Approximately(first.x, -second.x) && Mathf.Approximately(first.y, -second.y)
+                    && Mathf.Approximately(first.z, -second.z) && Mathf.Approximately(first.w, -second.w));
+        }
     }
 }
 
