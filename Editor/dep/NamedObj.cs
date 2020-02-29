@@ -1,7 +1,7 @@
 ﻿#if !CORE_LIB
 using Object = UnityEngine.Object;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal interface NamedObj
     {

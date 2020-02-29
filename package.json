@@ -1,11 +1,11 @@
 
 {
-	"name": "mulova.uiswitch",
-	"displayName": "mulova.uiswitch",
-	"version": "1.0.0",
+	"name": "mulova.switcher",
+	"displayName": "mulova.switcher",
+	"version": "0.1.0",
 	"unity": "2019.3",
-	"description": "WISIWIG UI case library",
-	"keywords": ["mulova", "uiswitch"],
+	"description": "WISIWIG switch case library",
+	"keywords": ["mulova", "switcher"],
 	"category": "mulova",
 	"dependencies": {
 	}

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class EditorGUIUtil
     {

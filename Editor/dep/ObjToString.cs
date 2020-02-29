@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using Object = UnityEngine.Object;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public delegate string ToStr(object o);
     public delegate Object ToObject(object o);

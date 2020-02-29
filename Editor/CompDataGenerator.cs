@@ -7,7 +7,7 @@ using System.Ex;
 using System.Collections.Generic.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class CompDataGenerator
     {

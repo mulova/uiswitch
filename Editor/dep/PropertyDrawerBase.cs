@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 using UnityEditorInternal;
 using System.Collections.Generic;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public abstract class PropertyDrawerBase : PropertyDrawer
     {

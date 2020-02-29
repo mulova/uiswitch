@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class ContentColorScope : IDisposable
     {
