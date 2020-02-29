@@ -9,9 +9,9 @@ using mulova.unicore;
 using UnityEngine.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
-    [CustomPropertyDrawer(typeof(UISwitchSet))]
+    [CustomPropertyDrawer(typeof(SwitchSet))]
     public class UISwitchSetDrawer : PropertyDrawerBase
     {
         private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
@@ -43,7 +43,7 @@ namespace mulova.ui
 
             void OnDrawVisibility(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused)
             {
-                var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as UISwitch);
+                var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as Switcher);
                 using (new ContentColorScope(Color.gray, !union[index]))
                 {
                     var bounds = rect.SplitByWidths(25, 25);
@@ -100,7 +100,7 @@ namespace mulova.ui
         private double changedTime;
         protected override void OnGUI(SerializedProperty p, Rect bound)
         {
-            var uiSwitch = p.serializedObject.targetObject as UISwitch;
+            var uiSwitch = p.serializedObject.targetObject as Switcher;
             // Draw Name
             var bounds = bound.SplitByHeights(lineHeight);
             var n = p.FindPropertyRelative("name");
@@ -131,7 +131,7 @@ namespace mulova.ui
                         {
                             UISwitchInspector.Activate(n.stringValue, !UISwitchInspector.IsActive(n.stringValue));
                         }
-                        var script = p.serializedObject.targetObject as UISwitch;
+                        var script = p.serializedObject.targetObject as Switcher;
                         script.Set(n.stringValue);
                     }
                 }
@@ -207,7 +207,7 @@ namespace mulova.ui
         private int visHeight;
         public override float GetPropertyHeight(SerializedProperty p, GUIContent label)
         {
-            var uiSwitch = p.serializedObject.targetObject as UISwitch;
+            var uiSwitch = p.serializedObject.targetObject as Switcher;
             var separator = 10;
             visHeight = (int)GetVisibilityDrawer(p).GetHeight();
             float height = visHeight;

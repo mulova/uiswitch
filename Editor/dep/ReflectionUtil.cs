@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public static class ReflectionUtil
     {

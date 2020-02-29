@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public static class Extension
     {

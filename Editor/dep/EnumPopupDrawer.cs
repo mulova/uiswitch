@@ -3,7 +3,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [CustomPropertyDrawer(typeof(EnumPopupAttribute))]
     internal class EnumPopupDrawer : PropertyDrawer

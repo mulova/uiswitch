@@ -8,7 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal static class EditorUtil
     {

@@ -1,7 +1,7 @@
 ﻿#if !CORE_LIB
 using System;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal static class EnumUtil
     {

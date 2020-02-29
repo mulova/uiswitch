@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
     public class TransformData : ICompData

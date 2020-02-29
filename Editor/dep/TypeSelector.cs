@@ -5,7 +5,7 @@ using UnityEditor;
 using Object = UnityEngine.Object;
 using System.Collections.Generic;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class TypeSelector
     {
