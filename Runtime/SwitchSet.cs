@@ -13,10 +13,10 @@ using System.Text.Ex;
 using mulova.unicore;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
-    public class UISwitchSet : ICloneable
+    public class SwitchSet : ICloneable
     {
         [EnumPopup("enumType")] public string name;
         public List<bool> visibility = new List<bool>();
@@ -37,7 +37,7 @@ namespace mulova.ui
 
         public object Clone()
         {
-            UISwitchSet e = new UISwitchSet();
+            SwitchSet e = new SwitchSet();
             e.name = this.name;
             e.visibility = new List<bool>(visibility);
             e.trans = new List<Transform>(trans);

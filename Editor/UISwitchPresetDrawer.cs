@@ -8,9 +8,9 @@ using mulova.unicore;
 using UnityEngine.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
-    [CustomPropertyDrawer(typeof(UISwitchPreset))]
+    [CustomPropertyDrawer(typeof(SwitchPreset))]
     public class UISwitchPresetDrawer : PropertyDrawer
     {
         private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>(); //
@@ -18,7 +18,7 @@ namespace mulova.ui
         private PopupReorder GetKeysDrawer(SerializedProperty p)
         {
             var v = pool.Get(p.propertyPath);
-            string[] options = (p.serializedObject.targetObject as UISwitch).GetAllKeys().ToArray();
+            string[] options = (p.serializedObject.targetObject as Switcher).GetAllKeys().ToArray();
             if (v == null)
             {
                 var prop = p.FindPropertyRelative("keys");
@@ -49,7 +49,7 @@ namespace mulova.ui
                 {
                     if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
                     {
-                        var script = property.serializedObject.targetObject as UISwitch;
+                        var script = property.serializedObject.targetObject as Switcher;
                         script.SetPreset(n.stringValue);
                         UISwitchInspector.SetActive(presetKeys.ToArray());
                     }

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class EnableScope : IDisposable
     {

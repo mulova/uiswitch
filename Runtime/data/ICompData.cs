@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public interface ICompData
     {

@@ -7,7 +7,7 @@ using UnityEngine;
 using static UnityEditorInternal.ReorderableList;
 using Object = UnityEngine.Object;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class ObjPropertyReorder<T> : PropertyReorder<T> where T : Object
     {
