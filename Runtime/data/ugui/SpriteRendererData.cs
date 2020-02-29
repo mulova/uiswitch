@@ -1,15 +1,17 @@
 ﻿using System;
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
     public class SpriteRendererData : ICompData
     {
         public SpriteRenderer rend;
         public Sprite sprite;
+        public bool enabled;
 
         public Type type => typeof(SpriteRenderer);
+        public bool active => enabled;
 
         public Component target
         {
@@ -21,23 +23,27 @@ namespace mulova.ui
         {
             var r = c as SpriteRenderer;
             r.sprite = sprite;
+            r.enabled = enabled;
         }
 
         public void Collect(Component c)
         {
             rend = c as SpriteRenderer;
             sprite = rend.sprite;
+            enabled = rend.enabled;
         }
 
         public override bool Equals(object obj)
         {
             var that = (SpriteRendererData)obj;
-            return this.sprite == that.sprite;
+            return this.sprite == that.sprite
+                && this.enabled == that.enabled;
         }
 
         public override int GetHashCode()
         {
-            return sprite.GetHashCode();
+            return sprite.GetHashCode()
+                + enabled.GetHashCode();
         }
     }
 }
