@@ -1,5 +1,5 @@
 ﻿#if !CORE_LIB
-namespace mulova.ui
+namespace mulova.switcher
 {
     public static class FloatEx
     {

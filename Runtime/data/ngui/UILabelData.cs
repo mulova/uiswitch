@@ -2,7 +2,7 @@
 using UnityEngine;
 using static UILabel;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
     public class UILabelData : ICompData

@@ -2,7 +2,7 @@
 using UnityEngine;
 using static UIButtonColor;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
     public class UIButtonData : ICompData

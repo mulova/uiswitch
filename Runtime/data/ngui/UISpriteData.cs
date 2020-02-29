@@ -2,7 +2,7 @@
 using UnityEngine;
 using static UIBasicSprite;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
     public class UISpriteData : ICompData
