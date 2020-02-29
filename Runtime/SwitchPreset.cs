@@ -8,17 +8,17 @@ using System;
 using System.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [Serializable]
-    public class UISwitchPreset : ICloneable
+    public class SwitchPreset : ICloneable
     {
         public string presetName;
         public string[] keys = new string[0];
 
         public object Clone()
         {
-            UISwitchPreset p = new UISwitchPreset();
+            SwitchPreset p = new SwitchPreset();
             p.keys = keys.ShallowClone();
             return p;
         }

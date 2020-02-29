@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     internal class EditorGUILayoutUtil
     {

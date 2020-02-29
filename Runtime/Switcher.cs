@@ -17,21 +17,21 @@ using mulova.unicore;
 using UnityEngine.Ex;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     [ExecuteAlways]
-    public class UISwitch : MonoBehaviour
+    public class Switcher : MonoBehaviour
     {
 #pragma warning disable 0414
         [SerializeField, EnumType] private string enumType = "";
 #pragma warning restore 0414
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
-        [SerializeField] public List<UISwitchSet> switches = new List<UISwitchSet>();
-        [SerializeField] public List<UISwitchPreset> preset = new List<UISwitchPreset>();
+        [SerializeField] public List<SwitchSet> switches = new List<SwitchSet>();
+        [SerializeField] public List<SwitchPreset> preset = new List<SwitchPreset>();
         public bool showTrans { get; set; } = false; // editor only
         public bool showAction { get; set; } = false; // editor only
 
-        private UISwitchSet DUMMY = new UISwitchSet();
+        private SwitchSet DUMMY = new SwitchSet();
         private HashSet<string> keySet = new HashSet<string>();
 
         private ILogger log
@@ -127,7 +127,7 @@ namespace mulova.ui
         public void SetAction(object key, UnityAction action)
         {
             string k = Normalize(key);
-            UISwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
+            SwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
             if (s.isValid)
             {
                 s.action.RemoveAllListeners();
@@ -141,7 +141,7 @@ namespace mulova.ui
         public void AddAction(object key, UnityAction action)
         {
             string k = Normalize(key);
-            UISwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
+            SwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
             if (s.isValid)
             {
                 s.action.AddListener(action);
@@ -185,7 +185,7 @@ namespace mulova.ui
         {
             var visible = new bool[objs.Count];
             int match = 0;
-            foreach (UISwitchSet e in switches)
+            foreach (SwitchSet e in switches)
             {
                 if (keySet.Contains(Normalize(e.name)))
                 {
@@ -246,14 +246,14 @@ namespace mulova.ui
         public GameObject GetObject(object key, string name)
         {
             // Get Switch slot
-            UISwitchSet slot = GetSwitchSlot(key);
+            SwitchSet slot = GetSwitchSlot(key);
             return slot.FindObject(objs, o => o.name.EqualsIgnoreCase(name));
         }
 
         public T GetComponent<T>(object key) where T: Component
         {
             // Get Switch slot
-            UISwitchSet slot = GetSwitchSlot(key);
+            SwitchSet slot = GetSwitchSlot(key);
             for (int i=0; i<slot.visibility.Count; ++i)
             {
                 if (slot.visibility[i])
@@ -268,10 +268,10 @@ namespace mulova.ui
             return null;
         }
 
-        private UISwitchSet GetSwitchSlot(object key)
+        private SwitchSet GetSwitchSlot(object key)
         {
             string id = Normalize(key);
-            foreach (UISwitchSet e in switches)
+            foreach (SwitchSet e in switches)
             {
                 if (e.name.EqualsIgnoreCase(id))
                 {

@@ -7,12 +7,12 @@ using mulova.unicore;
 using mulova.commons;
 #endif
 
-namespace mulova.ui
+namespace mulova.switcher
 {
-    [CustomEditor(typeof(UISwitch))]
+    [CustomEditor(typeof(Switcher))]
     public class UISwitchInspector : Editor
     {
-        private UISwitch uiSwitch;
+        private Switcher uiSwitch;
         internal static bool exclusive = true;
         private double changedTime = double.MaxValue;
         internal static HashSet<string> activeSet = new HashSet<string>();
@@ -61,7 +61,7 @@ namespace mulova.ui
 
         private void OnEnable()
         {
-            uiSwitch = (UISwitch)target;
+            uiSwitch = (Switcher)target;
             EditorApplication.update += OnUpdate;
             changedTime = double.MaxValue;
 
@@ -239,7 +239,7 @@ namespace mulova.ui
         private void ExtractDiff()
         {
             Undo.RecordObject(uiSwitch, "Diff");
-            uiSwitch.switches = new List<UISwitchSet>();
+            uiSwitch.switches = new List<SwitchSet>();
             var roots = uiSwitch.objs;
             // just set data for the first object
             var root0 = roots[0];
@@ -251,10 +251,10 @@ namespace mulova.ui
                 diffs[i] = diffs[i].FindAll(d=> !(d is TransformData));
             }
 
-            var ui =root0.GetComponent<UISwitch>();
+            var ui =root0.GetComponent<Switcher>();
             if (ui == null)
             {
-                ui =root0.AddComponent<UISwitch>();
+                ui =root0.AddComponent<Switcher>();
                 Undo.RegisterCreatedObjectUndo(ui,root0.name);
             }
             // Get Position Diffs
@@ -304,7 +304,7 @@ namespace mulova.ui
 
             for (int i = 0; i < tDiffs.Count; ++i)
             {
-                var s = new UISwitchSet();
+                var s = new SwitchSet();
                 s.name = roots[i].name;
 #if UNITY_2019_1_OR_NEWER
                 s.data = diffs[i];
@@ -363,7 +363,7 @@ namespace mulova.ui
             }
         }
 
-        public static bool[] GetVisibilityUnion(UISwitch uiSwitch)
+        public static bool[] GetVisibilityUnion(Switcher uiSwitch)
         {
             bool[] union = new bool[uiSwitch.objs.Count];
             HashSet<List<bool>> set = new HashSet<List<bool>>();
@@ -372,7 +372,7 @@ namespace mulova.ui
                 var s = uiSwitch.switches[i];
                 if (set.Contains(s.visibility))
                 {
-                    uiSwitch.switches[i] = new UISwitchSet();
+                    uiSwitch.switches[i] = new SwitchSet();
                     EditorUtil.SetDirty(uiSwitch);
                 }
                 set.Add(uiSwitch.switches[i].visibility);

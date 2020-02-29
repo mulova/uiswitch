@@ -1,7 +1,7 @@
 ﻿#if !CORE_LIB
 using UnityEngine;
 
-namespace mulova.ui
+namespace mulova.switcher
 {
     public class EnumTypeAttribute : PropertyAttribute
     {
