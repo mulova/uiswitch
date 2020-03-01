@@ -1,7 +1,7 @@
 {
-    "name": "mulova.ui.editor",
+    "name": "mulova.switcher.editor",
     "references": [
-        "mulova.ui"
+        "mulova.switcher"
     ],
     "includePlatforms": [
         "Editor"
