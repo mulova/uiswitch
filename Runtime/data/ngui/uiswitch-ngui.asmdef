@@ -1,7 +1,7 @@
 {
     "name": "uis",
     "references": [
-        "mulova.ui",
+        "mulova.switcher",
         "NGUI"
     ],
     "includePlatforms": [],
