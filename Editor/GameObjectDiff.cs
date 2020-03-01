@@ -47,12 +47,15 @@ namespace mulova.switcher
             for (int i=1; i<roots[0].childCount; ++i)
             {
                 var c = roots[0].GetChild(i);
-                roots[i].Find(c.name).SetSiblingIndex(i);
 
                 var childRoots = new List<Transform>();
                 for (int j=0; j < roots.Count; ++j)
                 {
                     childRoots.Add(roots[j].GetChild(i));
+                    if (j != 0)
+                    {
+                        roots[j].Find(c.name).SetSiblingIndex(i);
+                    }
                 }
                 CreateMissingChildren(childRoots);
             }
