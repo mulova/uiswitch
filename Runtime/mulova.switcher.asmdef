@@ -1,14 +1,10 @@
 {
-    "name": "mulova.ui.editor",
+    "name": "mulova.switcher",
     "references": [
         "mulova.commons",
-        "mulova.unicore",
-        "mulova.unicore.editor",
-        "mulova.ui"
+        "mulova.unicore"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
