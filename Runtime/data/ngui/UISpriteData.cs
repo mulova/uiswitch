@@ -1,14 +1,15 @@
 ﻿using System;
 using UnityEngine;
 using static UIBasicSprite;
+using Object = UnityEngine.Object;
 
 namespace mulova.switcher
 {
     [Serializable]
-    public class UISpriteData : ICompData
+    public class UISpriteData : UIWidgetData<UISprite>
     {
         public UISprite sprite;
-        [SerializeReference] public INGUIAtlas atlas;
+        public Object atlas;
         public string spriteName;
         public FillDirection fillDirection = FillDirection.Radial360;
         public float fillAmount = 1f;
@@ -17,22 +18,16 @@ namespace mulova.switcher
         public bool applyGradient = false;
         public Color gradientTop = Color.white;
         public Color gradientBottom = new Color(0.7f, 0.7f, 0.7f);
-        public bool enabled;
 
-        public System.Type type => typeof(UISprite);
-        public bool active => enabled;
-
-        public Component target
+        public override Component target
         {
             get { return sprite; }
             set { sprite = value as UISprite; }
         }
 
-        public void ApplyTo(Component c)
+        protected override void ApplyTo(UISprite s)
         {
-            var s = c as UISprite;
-            s.enabled = enabled;
-            s.atlas = atlas;
+            s.atlas = atlas as INGUIAtlas;
             s.spriteName = spriteName;
             s.fillDirection = fillDirection;
             s.fillAmount = fillAmount;
@@ -43,11 +38,10 @@ namespace mulova.switcher
             s.gradientBottom = gradientBottom;
         }
 
-        public void Collect(Component c)
+        protected override void Collect(UISprite s)
         {
-            sprite = c as UISprite;
-            enabled = sprite.enabled;
-            atlas = sprite.atlas;
+            sprite = s;
+            atlas = sprite.atlas as Object;
             spriteName = sprite.spriteName;
             fillDirection = sprite.fillDirection;
             fillAmount = sprite.fillAmount;
@@ -58,11 +52,10 @@ namespace mulova.switcher
             gradientBottom = sprite.gradientBottom;
         }
 
-        public override bool Equals(object obj)
+        protected override bool DataEquals(object o)
         {
-            var that = (UISpriteData)obj;
-            return this.enabled == that.enabled 
-                && this.spriteName == that.spriteName
+            var that = o as UISpriteData;
+            return this.spriteName == that.spriteName
                 && this.atlas == that.atlas
                 && this.fillDirection == that.fillDirection
                 && this.fillAmount.ApproximatelyEquals(that.fillAmount)
@@ -71,13 +64,12 @@ namespace mulova.switcher
                 && this.applyGradient == that.applyGradient
                 && this.gradientTop == that.gradientTop
                 && this.gradientBottom == that.gradientBottom
-                ;
+            ;
         }
 
-        public override int GetHashCode()
+        protected override int GetDataHash()
         {
-            return enabled.GetHashCode() 
-                + spriteName.GetHashCode()
+            return spriteName.GetHashCode()
                 + atlas?.GetHashCode() ?? 0
                 + fillDirection.GetHashCode()
                 + fillAmount.GetHashCode()

@@ -5,10 +5,9 @@ using static UILabel;
 namespace mulova.switcher
 {
     [Serializable]
-    public class UILabelData : ICompData
+    public class UILabelData : UIWidgetData<UILabel>
     {
         public UILabel lbl;
-        public Color color;
         public string text;
         public int fontSize;
         public FontStyle fontStyle;
@@ -31,81 +30,73 @@ namespace mulova.switcher
         public bool overflowEllipsis;
         public int overflowWidth;
         public Modifier modifier;
-        public bool enabled;
 
-        public Type type => typeof(UILabel);
-        public bool active => enabled;
-
-        public Component target
+        public override Component target
         {
             get { return lbl; }
             set { lbl = value as UILabel; }
         }
 
-        public void ApplyTo(Component c)
+        protected override void ApplyTo(UILabel l)
         {
-            var l = c as UILabel;
-            lbl.enabled = enabled;
-            lbl.color = color;
-            lbl.text = text;
-            lbl.fontSize = fontSize;
-            lbl.fontStyle = fontStyle;
-            lbl.alignment = alignment;
-            lbl.supportEncoding = encoding;
-            lbl.maxLineCount = maxLineCount;
-            lbl.effectStyle = effectStyle;
-            lbl.effectColor = effectColor;
-            lbl.symbolStyle = symbolStyle;
-            lbl.effectDistance = effectDistance;
-            lbl.overflowMethod = overflow;
-            lbl.applyGradient = applyGradient;
-            lbl.gradientTop = gradientTop;
-            lbl.gradientBottom = gradientBottom;
-            lbl.spacingX = spacingX;
-            lbl.spacingY = spacingY;
-            lbl.useFloatSpacing = useFloatSpacing;
-            lbl.floatSpacingX = floatSpacingX;
-            lbl.floatSpacingY = floatSpacingY;
-            lbl.overflowEllipsis = overflowEllipsis;
-            lbl.overflowWidth = overflowWidth;
-            lbl.modifier = modifier;
+            l.enabled = enabled;
+            l.text = text;
+            l.fontSize = fontSize;
+            l.fontStyle = fontStyle;
+            l.alignment = alignment;
+            l.supportEncoding = encoding;
+            l.maxLineCount = maxLineCount;
+            l.effectStyle = effectStyle;
+            l.effectColor = effectColor;
+            l.symbolStyle = symbolStyle;
+            l.effectDistance = effectDistance;
+            l.overflowMethod = overflow;
+            l.applyGradient = applyGradient;
+            l.gradientTop = gradientTop;
+            l.gradientBottom = gradientBottom;
+            l.spacingX = spacingX;
+            l.spacingY = spacingY;
+            l.useFloatSpacing = useFloatSpacing;
+            l.floatSpacingX = floatSpacingX;
+            l.floatSpacingY = floatSpacingY;
+            l.overflowEllipsis = overflowEllipsis;
+            l.overflowWidth = overflowWidth;
+            l.modifier = modifier;
         }
 
-        public void Collect(Component c)
+        protected override void Collect(UILabel l)
         {
-            lbl = c as UILabel;
-            enabled = lbl.enabled;
-            color = lbl.color;
-            text = lbl.text;
-            fontSize = lbl.fontSize;
-            fontStyle = lbl.fontStyle;
-            alignment = lbl.alignment;
-            encoding = lbl.supportEncoding;
-            maxLineCount = lbl.maxLineCount;
-            effectStyle = lbl.effectStyle;
-            effectColor = lbl.effectColor;
-            symbolStyle = lbl.symbolStyle;
-            effectDistance = lbl.effectDistance;
-            overflow = lbl.overflowMethod;
-            applyGradient = lbl.applyGradient;
-            gradientTop = lbl.gradientTop;
-            gradientBottom = lbl.gradientBottom;
-            spacingX = lbl.spacingX;
-            spacingY = lbl.spacingY;
-            useFloatSpacing = lbl.useFloatSpacing;
-            floatSpacingX = lbl.floatSpacingX;
-            floatSpacingY = lbl.floatSpacingY;
-            overflowEllipsis = lbl.overflowEllipsis;
-            overflowWidth = lbl.overflowWidth;
-            modifier = lbl.modifier;
+            lbl = l;
+            enabled = l.enabled;
+            text = l.text;
+            fontSize = l.fontSize;
+            fontStyle = l.fontStyle;
+            alignment = l.alignment;
+            encoding = l.supportEncoding;
+            maxLineCount = l.maxLineCount;
+            effectStyle = l.effectStyle;
+            effectColor = l.effectColor;
+            symbolStyle = l.symbolStyle;
+            effectDistance = l.effectDistance;
+            overflow = l.overflowMethod;
+            applyGradient = l.applyGradient;
+            gradientTop = l.gradientTop;
+            gradientBottom = l.gradientBottom;
+            spacingX = l.spacingX;
+            spacingY = l.spacingY;
+            useFloatSpacing = l.useFloatSpacing;
+            floatSpacingX = l.floatSpacingX;
+            floatSpacingY = l.floatSpacingY;
+            overflowEllipsis = l.overflowEllipsis;
+            overflowWidth = l.overflowWidth;
+            modifier = l.modifier;
         }
 
-        public override bool Equals(object obj)
+        protected override bool DataEquals(object o)
         {
-            var that = (UILabelData)obj;
+            UILabelData that = o as UILabelData;
             return this.text == that.text
             && this.enabled == that.enabled
-            && this.color == that.color
             && this.fontSize == that.fontSize
             && this.fontStyle == that.fontStyle
             && this.alignment == that.alignment
@@ -129,11 +120,10 @@ namespace mulova.switcher
             && this.modifier == that.modifier;
         }
 
-        public override int GetHashCode()
+        protected override int GetDataHash()
         {
             return text.GetHashCode() 
             + enabled.GetHashCode()
-            + color.GetHashCode()
             + fontSize.GetHashCode()
             + alignment.GetHashCode()
             + encoding.GetHashCode()
