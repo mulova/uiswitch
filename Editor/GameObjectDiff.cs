@@ -14,7 +14,7 @@ namespace mulova.switcher
     {
         private static CompDataGenerator dataGen = new CompDataGenerator();
 
-        public static void CreateMissingChildren(List<Transform> roots)
+        public static void CreateMissingChildren(IList<Transform> roots)
         {
             var children = GetChildUnion(roots);
 
@@ -61,7 +61,7 @@ namespace mulova.switcher
             }
         }
 
-        public static List<List<ICompData>> CreateDiff(List<GameObject> roots)
+        public static List<ICompData>[] CreateDiff(GameObject[] roots)
         {
             var parents = roots.ConvertAll(o => o.transform);
             var store = parents.ConvertAll(p => new List<ICompData>());
@@ -69,7 +69,7 @@ namespace mulova.switcher
             return store;
         }
 
-        private static void GetDiffRecursively(List<Transform> parents, List<List<ICompData>> store, bool includeTransformDiff = true)
+        private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store, bool includeTransformDiff = true)
         {
             var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> includeTransformDiff || !(c is Transform)).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
@@ -89,9 +89,9 @@ namespace mulova.switcher
         /// </summary>
         /// <returns>The diff.</returns>
         /// <param name="comps">return Component data if all components' data are the same.</param>
-        private static void GetComponentDiff(List<Component[]> comps, int index, List<List<ICompData>> store)
+        private static void GetComponentDiff(Component[][] comps, int index, List<ICompData>[] store)
         {
-            var arr = new ICompData[comps.Count];
+            var arr = new ICompData[comps.Length];
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
@@ -111,7 +111,7 @@ namespace mulova.switcher
             }
         }
 
-        public static List<string> GetDuplicateSiblingNames(List<GameObject> objs)
+        public static List<string> GetDuplicateSiblingNames(IList<GameObject> objs)
         {
             List<string> dup = new List<string>();
             foreach (var o in objs)
@@ -168,7 +168,7 @@ namespace mulova.switcher
             return true;
         }
 
-        public static List<string> GetComponentMismatch(List<Transform> objs)
+        public static List<string> GetComponentMismatch(IList<Transform> objs)
         {
             List<string> err = new List<string>();
             var c0 = objs[0].GetComponents<Component>();
@@ -177,7 +177,7 @@ namespace mulova.switcher
                 var c = objs[i].GetComponents<Component>();
                 if (c0.Length != c.Length)
                 {
-                    err.Add($"{objs[0].name}({c0.Length}) <-> {objs[i].name}({c.Length})");
+                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs {c.Length-1}");
                 } else
                 {
                     for (int j=0; j<c.Length; ++j)
@@ -227,7 +227,7 @@ namespace mulova.switcher
             return null;
         }
 
-        private static List<Transform> GetChildUnion(List<Transform> parents)
+        private static List<Transform> GetChildUnion(IList<Transform> parents)
         {
             List<Transform> sorted = new List<Transform>(parents);
             sorted.Sort(SortByChildCount);
@@ -264,13 +264,12 @@ namespace mulova.switcher
             return names;
         }
 
-        internal static List<List<T>> FindAll<T>(List<List<ICompData>> diffs) where T : ICompData
+        internal static List<T>[] FindAll<T>(List<ICompData>[] diffs) where T : ICompData
         {
-            var list = new List<List<T>>();
-            foreach (var d in diffs)
+            var list = new List<T>[diffs.Length];
+            for (int i=0; i<diffs.Length; ++i)
             {
-                var filtered = d.FindAll(c => c is T).ConvertAll(t => (T)t);
-                list.Add(filtered);
+                list[i] = diffs[i].FindAll(c => c is T).ConvertAll(t => (T)t);
             }
             return list;
         }

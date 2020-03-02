@@ -228,6 +228,24 @@ namespace mulova.switcher
                 (Mathf.Approximately(first.x, -second.x) && Mathf.Approximately(first.y, -second.y)
                     && Mathf.Approximately(first.z, -second.z) && Mathf.Approximately(first.w, -second.w));
         }
+
+        public static D[] ConvertAll<S, D>(this S[] src) where D:S {
+            if (src == null) {
+                return null;
+            }
+            D[] dst = new D[src.Length];
+            for (int i=0; i<src.Length; ++i) {
+                dst[i] = (D)src[i];
+            }
+            return dst;
+        }
+        
+        public static D[] ConvertAll<S, D>(this S[] src, Converter<S, D> converter) {
+            if (src == null) {
+                return null;
+            }
+            return Array.ConvertAll(src, converter);
+        }
     }
 }
 
