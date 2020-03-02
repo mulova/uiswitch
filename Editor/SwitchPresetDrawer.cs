@@ -11,7 +11,7 @@ using UnityEngine.Ex;
 namespace mulova.switcher
 {
     [CustomPropertyDrawer(typeof(SwitchPreset))]
-    public class UISwitchPresetDrawer : PropertyDrawer
+    public class SwitchPresetDrawer : PropertyDrawer
     {
         private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>(); //
 
@@ -43,7 +43,7 @@ namespace mulova.switcher
             {
                 presetKeys.Add(keysProp.GetArrayElementAtIndex(i).stringValue);
             }
-            using (new ColorScope(Color.green, UISwitchInspector.IsPreset(presetKeys)))
+            using (new ColorScope(Color.green, SwitcherInspector.IsPreset(presetKeys)))
             {
                 using (new ColorScope(Color.red, n.stringValue.IsEmpty()))
                 {
@@ -51,7 +51,7 @@ namespace mulova.switcher
                     {
                         var script = property.serializedObject.targetObject as Switcher;
                         script.SetPreset(n.stringValue);
-                        UISwitchInspector.SetActive(presetKeys.ToArray());
+                        SwitcherInspector.SetActive(presetKeys.ToArray());
                     }
                     EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
                 }

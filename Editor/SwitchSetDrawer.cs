@@ -12,7 +12,7 @@ using UnityEngine.Ex;
 namespace mulova.switcher
 {
     [CustomPropertyDrawer(typeof(SwitchSet))]
-    public class UISwitchSetDrawer : PropertyDrawerBase
+    public class SwitchSetDrawer : PropertyDrawerBase
     {
         private Dictionary<string, PropertyReorder<bool>> vPool = new Dictionary<string, PropertyReorder<bool>>();
         private Dictionary<string, PropertyReorder<Transform>> tPool = new Dictionary<string, PropertyReorder<Transform>>();
@@ -43,7 +43,7 @@ namespace mulova.switcher
 
             void OnDrawVisibility(SerializedProperty item, Rect rect, int index, bool isActive, bool isFocused)
             {
-                var union = UISwitchInspector.GetVisibilityUnion(item.serializedObject.targetObject as Switcher);
+                var union = SwitcherInspector.GetVisibilityUnion(item.serializedObject.targetObject as Switcher);
                 using (new ContentColorScope(Color.gray, !union[index]))
                 {
                     var bounds = rect.SplitByWidths(25, 25);
@@ -110,7 +110,7 @@ namespace mulova.switcher
             boundsLeft.x += 30;
             boundsLeft.width -= 30;
             Color c = GUI.color;
-            if (UISwitchInspector.IsActive(n.stringValue))
+            if (SwitcherInspector.IsActive(n.stringValue))
             {
                 c = UpdatePos(p)? ChangedSelectedColor: SelectedColor;
             }
@@ -126,10 +126,10 @@ namespace mulova.switcher
                         bool hasPreset = !uiSwitch.preset.IsEmpty();
                         if (!hasPreset)
                         {
-                            UISwitchInspector.SetActive(n.stringValue, n.stringValue);
+                            SwitcherInspector.SetActive(n.stringValue, n.stringValue);
                         } else
                         {
-                            UISwitchInspector.Activate(n.stringValue, !UISwitchInspector.IsActive(n.stringValue));
+                            SwitcherInspector.Activate(n.stringValue, !SwitcherInspector.IsActive(n.stringValue));
                         }
                         var script = p.serializedObject.targetObject as Switcher;
                         script.Set(n.stringValue);
