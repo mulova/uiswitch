@@ -111,7 +111,7 @@ namespace mulova.switcher
             }
         }
 
-        public static List<string> GetDuplicateSiblingNames(List<GameObject> objs)
+        public static List<string> GetDuplicateSiblingNames(IList<GameObject> objs)
         {
             List<string> dup = new List<string>();
             foreach (var o in objs)

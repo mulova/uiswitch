@@ -10,12 +10,25 @@ using mulova.commons;
 namespace mulova.switcher
 {
     [CustomEditor(typeof(Switcher))]
-    public class UISwitchInspector : Editor
+    public class SwitcherInspector : Editor
     {
         private Switcher uiSwitch;
         internal static bool exclusive = true;
         private double changedTime = double.MaxValue;
         internal static HashSet<string> activeSet = new HashSet<string>();
+
+        [MenuItem("GameObject/Switcher", true, 999)]
+        public static bool IsCreateSwitcher()
+        {
+            return Selection.gameObjects.Length > 1;
+        }
+
+        [MenuItem("GameObject/Switcher", false, 999)]
+        public static void CreateSwitcher()
+        {
+
+        }
+
 
         internal static bool IsPreset(IList<string> actives)
         {
@@ -184,39 +197,31 @@ namespace mulova.switcher
                 if (uiSwitch.objs.Count >= 2)
                 {
                     serializedObject.Update();
-                    var duplicates = GameObjectDiff.GetDuplicateSiblingNames(uiSwitch.objs);
+                    List<GameObject> roots = uiSwitch.objs;
+                    var duplicates = GameObjectDiff.GetDuplicateSiblingNames(roots);
                     if (duplicates.Count > 0)
                     {
                         EditorGUILayout.HelpBox("Duplicate sibling names " + duplicates.Join(","), MessageType.Warning);
                     }
-                    else if (uiSwitch.switches.Count == 0)
+                    else if (GUILayout.Button("Extract Diff"))
                     {
-                        if (GameObjectDiff.IsChildrenMatches(uiSwitch.objs.ConvertAll(o => o.transform)))
+                        if (!GameObjectDiff.IsChildrenMatches(roots.ConvertAll(o => o.transform)))
                         {
-                            var err = GameObjectDiff.GetComponentMismatch(uiSwitch.objs.ConvertAll(o => o.transform));
-                            if (err.Count == 0)
-                            {
-                                if (GUILayout.Button("Extract Diff"))
-                                {
-                                    ExtractDiff();
-                                }
-                            } else
-                            {
-                                EditorGUILayout.HelpBox("Component Mismatch\n" + err.Join(","), MessageType.Warning);
-                            }
+                            Undo.RecordObjects(roots.ToArray(), "Diff");
+                            var parents = uiSwitch.objs.ConvertAll(o => o.transform);
+                            GameObjectDiff.CreateMissingChildren(parents);
+                        }
+                        var err = GameObjectDiff.GetComponentMismatch(roots.ConvertAll(o => o.transform));
+                        if (err.Count == 0)
+                        {
+                            ExtractDiff();
                         } else
                         {
-                            if (GUILayout.Button("Create Siblings"))
-                            {
-                                Undo.RecordObject(uiSwitch, "Diff");
-                                var parents = uiSwitch.objs.ConvertAll(o => o.transform);
-                                GameObjectDiff.CreateMissingChildren(parents);
-                            }
+                            EditorGUILayout.HelpBox("Component Mismatch\n" + err.Join(","), MessageType.Warning);
                         }
                     }
                 }
-            }
-            if (uiSwitch.switches.Count > 0)
+            } else if (uiSwitch.switches.Count > 0)
             {
                 EditorGUILayout.Separator();
                 if (!uiSwitch.showTrans)
