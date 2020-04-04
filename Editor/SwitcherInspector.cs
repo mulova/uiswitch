@@ -115,7 +115,7 @@ namespace mulova.switcher
                         {
                             if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {
-                                uiSwitch.Set(s.name);
+                                uiSwitch.SetKey(s.name);
                                 SetActive(s.name);
                             }
                         }
