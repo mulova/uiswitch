@@ -47,25 +47,25 @@ namespace mulova.switcher
             keySet.Clear();
         }
 
-        public bool Contains(object o)
+        public bool ContainsKey(object o)
         {
-            string s = Normalize(o);
-            return keySet.Find(k => k.Equals(Normalize(s))) != null;
+            string s = NormalizeKey(o);
+            return keySet.Contains(s);
         }
 
-        public bool Is(params object[] list)
+        public bool IsKeys(params object[] list)
         {
             if (list.GetCount() == keySet.Count)
             {
                 foreach (object o in list)
                 {
-                    if (!Contains(o))
+                    if (!ContainsKey(o))
                     {
                         return false;
                     }
                 }
             }
-            return true;
+            return false;
         }
 
         public bool IsPreset(string s)
@@ -75,50 +75,53 @@ namespace mulova.switcher
             {
                 return false;
             }
-            return Is(p.keys);
+            return IsKeys(p.keys);
         }
 
-        public void AddSwitch(params object[] list)
+        public void SetPreset(object id)
         {
-            foreach (object o in list)
+            var k = NormalizeKey(id);
+            foreach (var p in preset)
             {
-                keySet.Add(Normalize(o));
-            }
-        }
-
-        public void RemoveSwitch(params object[] list)
-        {
-            foreach (object o in list)
-            {
-                keySet.Remove(Normalize(o));
-            }
-        }
-
-        public bool Remove(GameObject o)
-        {
-            int i = objs.IndexOf(o);
-            if (i >= 0)
-            {
-                foreach (var s in switches)
+                if (p.presetName == k)
                 {
-                    s.RemoveAt(i);
+                    SetKey(p.keys);
+                    break;
                 }
-
-                objs.RemoveAt(i);
-                return true;
-            } else
-            {
-                return false;
             }
         }
 
-        public void ToggleSwitch(object key)
+        public void SetKey(params object[] param)
         {
-            string k = Normalize(key);
+            ResetSwitch();
+            AddKey(param);
+            Apply();
+        }
+
+        public void AddKey(params object[] list)
+        {
+            foreach (object o in list)
+            {
+                keySet.Add(NormalizeKey(o));
+            }
+        }
+
+        public void RemoveKey(params object[] list)
+        {
+            foreach (object o in list)
+            {
+                keySet.Remove(NormalizeKey(o));
+            }
+        }
+
+        public void ToggleKey(object key)
+        {
+            string k = NormalizeKey(key);
             if (keySet.Contains(k))
             {
                 keySet.Remove(k);
-            } else
+            }
+            else
             {
                 keySet.Add(k);
             }
@@ -126,13 +129,14 @@ namespace mulova.switcher
 
         public void SetAction(object key, UnityAction action)
         {
-            string k = Normalize(key);
+            string k = NormalizeKey(key);
             SwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
             if (s.isValid)
             {
                 s.action.RemoveAllListeners();
                 s.action.AddListener(action);
-            } else
+            }
+            else
             {
                 Assert.IsTrue(false, $"Key {k} not found");
             }
@@ -140,7 +144,7 @@ namespace mulova.switcher
 
         public void AddAction(object key, UnityAction action)
         {
-            string k = Normalize(key);
+            string k = NormalizeKey(key);
             SwitchSet s = switches.Find(e => e.name.EqualsIgnoreCase(k));
             if (s.isValid)
             {
@@ -152,26 +156,7 @@ namespace mulova.switcher
             }
         }
 
-        public void Set(params object[] param)
-        {
-            ResetSwitch();
-            AddSwitch(param);
-            Apply();
-        }
-
-        public void SetPreset(object id)
-        {
-            var idStr = Normalize(id);
-            foreach (var p in preset)
-            {
-                if (p.presetName == idStr)
-                {
-                    Set(p.keys);
-                }
-            }
-        }
-
-        private string Normalize(object o)
+        private string NormalizeKey(object o)
         {
             return o.ToString();
         }
@@ -187,10 +172,10 @@ namespace mulova.switcher
             int match = 0;
             foreach (SwitchSet e in switches)
             {
-                if (keySet.Contains(Normalize(e.name)))
+                if (keySet.Contains(NormalizeKey(e.name)))
                 {
                     // groups objects to switch on and off
-                    for (int i=0; i<e.visibility.Count; ++i)
+                    for (int i = 0; i < e.visibility.Count; ++i)
                     {
                         visible[i] |= e.visibility[i];
                     }
@@ -221,14 +206,15 @@ namespace mulova.switcher
                         }
 #endif
                         e.action.Invoke();
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         log.Error(ex);
                     }
                 }
             }
 
-            for (int i=0; i<objs.Count; ++i)
+            for (int i = 0; i < objs.Count; ++i)
             {
                 objs[i].SetActive(visible[i]);
             }
@@ -243,18 +229,37 @@ namespace mulova.switcher
             }
         }
 
+        public bool Remove(GameObject o)
+        {
+            int i = objs.IndexOf(o);
+            if (i >= 0)
+            {
+                foreach (var s in switches)
+                {
+                    s.RemoveAt(i);
+                }
+
+                objs.RemoveAt(i);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public GameObject GetObject(object key, string name)
         {
             // Get Switch slot
-            SwitchSet slot = GetSwitchSlot(key);
+            SwitchSet slot = GetSlot(key);
             return slot.FindObject(objs, o => o.name.EqualsIgnoreCase(name));
         }
 
-        public T GetComponent<T>(object key) where T: Component
+        public T GetComponent<T>(object key) where T : Component
         {
             // Get Switch slot
-            SwitchSet slot = GetSwitchSlot(key);
-            for (int i=0; i<slot.visibility.Count; ++i)
+            SwitchSet slot = GetSlot(key);
+            for (int i = 0; i < slot.visibility.Count; ++i)
             {
                 if (slot.visibility[i])
                 {
@@ -268,9 +273,9 @@ namespace mulova.switcher
             return null;
         }
 
-        private SwitchSet GetSwitchSlot(object key)
+        private SwitchSet GetSlot(object key)
         {
-            string id = Normalize(key);
+            string id = NormalizeKey(key);
             foreach (SwitchSet e in switches)
             {
                 if (e.name.EqualsIgnoreCase(id))
