@@ -5,7 +5,7 @@ using static UIButtonColor;
 namespace mulova.switcher
 {
     [Serializable]
-    public class UIButtonData : UIWidgetData<UIButton>
+    public class UIButtonData : ICompData
     {
         public UIButton button;
         public string hoverSprite;
@@ -17,14 +17,21 @@ namespace mulova.switcher
         public float duration = 0.2f;
         public State state;
 
-        public override Component target
+        public GameObject tweenTarget;
+
+        public bool enabled;
+        public Type type => typeof(UIButton);
+        public bool active => enabled;
+
+        public Component target
         {
             get { return button; }
             set { button = value as UIButton; }
         }
 
-        protected override void ApplyTo(UIButton b)
+        public void ApplyTo(Component c)
         {
+            var b = c as UIButton;
             b.enabled = enabled;
             b.hoverSprite = hoverSprite;
             b.pressedSprite = pressedSprite;
@@ -36,9 +43,9 @@ namespace mulova.switcher
             b.state = state;
         }
 
-        protected override void Collect(UIButton b)
+        public void Collect(Component b)
         {
-            button = b;
+            button = b as UIButton;
             enabled = button.enabled;
             hoverSprite = button.hoverSprite;
             pressedSprite = button.pressedSprite;
@@ -50,7 +57,7 @@ namespace mulova.switcher
             state = button.state;
         }
 
-        protected override bool DataEquals(object obj)
+        public override bool Equals(object obj)
         {
             var that = (UIButtonData)obj;
             return this.enabled == that.enabled
@@ -65,7 +72,7 @@ namespace mulova.switcher
                 ;
         }
 
-        protected override int GetDataHash()
+        public override int GetHashCode()
         {
             return enabled.GetHashCode() 
                 + hoverSprite?.GetHashCode() ?? 0
