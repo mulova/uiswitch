@@ -7,6 +7,8 @@ namespace mulova.switcher
     [Serializable]
     public class UILabelData : UIWidgetData<UILabel>
     {
+        public bool applyText;
+
         public UILabel lbl;
         public string text;
         public int fontSize;
@@ -40,7 +42,10 @@ namespace mulova.switcher
         protected override void ApplyTo(UILabel l)
         {
             l.enabled = enabled;
-            l.text = text;
+            if (applyText)
+            {
+                l.text = text;
+            }
             l.fontSize = fontSize;
             l.fontStyle = fontStyle;
             l.alignment = alignment;
@@ -68,7 +73,10 @@ namespace mulova.switcher
         {
             lbl = l;
             enabled = l.enabled;
-            text = l.text;
+            if (applyText)
+            {
+                text = l.text;
+            }
             fontSize = l.fontSize;
             fontStyle = l.fontStyle;
             alignment = l.alignment;
