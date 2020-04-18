@@ -44,7 +44,7 @@ namespace mulova.switcher
             }
 
             // sort children
-            for (int i=1; i<roots[0].childCount; ++i)
+            for (int i=0; i<roots[0].childCount; ++i)
             {
                 var c = roots[0].GetChild(i);
 

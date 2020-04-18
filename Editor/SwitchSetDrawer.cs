@@ -132,7 +132,7 @@ namespace mulova.switcher
                             SwitcherInspector.Activate(n.stringValue, !SwitcherInspector.IsActive(n.stringValue));
                         }
                         var script = p.serializedObject.targetObject as Switcher;
-                        script.Set(n.stringValue);
+                        script.SetKey(n.stringValue);
                     }
                 }
             }
