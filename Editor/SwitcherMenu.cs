@@ -124,7 +124,7 @@ namespace mulova.switcher
 #endif
                 s.trans = posDiffs[i].ConvertAll(t => t.trans);
                 s.pos = posDiffs[i].ConvertAll(t => t.pos);
-                s.visibility = tDiffs[i].ConvertAll(t => t.enabled);
+                s.visibility = vDiffs[i].ConvertAll(t => t.enabled);
                 ui.switches.Add(s);
             }
             //diffList.serializedProperty.ClearArray();
