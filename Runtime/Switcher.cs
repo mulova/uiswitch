@@ -26,8 +26,9 @@ namespace mulova.switcher
         [SerializeField, EnumType] private string enumType = "";
 #pragma warning restore 0414
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
-        [SerializeField] public List<SwitchSet> switches = new List<SwitchSet>();
-        [SerializeField] public List<SwitchPreset> preset = new List<SwitchPreset>();
+        public List<SwitchSet> switches = new List<SwitchSet>();
+        public List<SwitchPreset> preset = new List<SwitchPreset>();
+        public bool caseSensitive = true;
         public bool showTrans { get; set; } = false; // editor only
         public bool showAction { get; set; } = false; // editor only
 
@@ -158,7 +159,13 @@ namespace mulova.switcher
 
         private string NormalizeKey(object o)
         {
-            return o.ToString();
+            if (caseSensitive)
+            {
+                return o.ToString();
+            } else
+            {
+                return o.ToString().ToLower();
+            }
         }
 
         public List<string> GetAllKeys()
