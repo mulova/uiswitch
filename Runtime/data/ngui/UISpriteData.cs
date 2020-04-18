@@ -11,6 +11,7 @@ namespace mulova.switcher
         public UISprite sprite;
         public Object atlas;
         public string spriteName;
+#if SWITCHER_DETAILED
         public FillDirection fillDirection = FillDirection.Radial360;
         public float fillAmount = 1f;
         public bool invert = false;
@@ -18,6 +19,7 @@ namespace mulova.switcher
         public bool applyGradient = false;
         public Color gradientTop = Color.white;
         public Color gradientBottom = new Color(0.7f, 0.7f, 0.7f);
+#endif
 
         public override Component target
         {
@@ -29,6 +31,7 @@ namespace mulova.switcher
         {
             s.atlas = atlas as INGUIAtlas;
             s.spriteName = spriteName;
+#if SWITCHER_DETAILED
             s.fillDirection = fillDirection;
             s.fillAmount = fillAmount;
             s.invert = invert;
@@ -36,6 +39,7 @@ namespace mulova.switcher
             s.applyGradient = applyGradient;
             s.gradientTop = gradientTop;
             s.gradientBottom = gradientBottom;
+#endif
         }
 
         protected override void Collect(UISprite s)
@@ -43,6 +47,7 @@ namespace mulova.switcher
             sprite = s;
             atlas = sprite.atlas as Object;
             spriteName = sprite.spriteName;
+#if SWITCHER_DETAILED
             fillDirection = sprite.fillDirection;
             fillAmount = sprite.fillAmount;
             invert = sprite.invert;
@@ -50,6 +55,7 @@ namespace mulova.switcher
             applyGradient = sprite.applyGradient;
             gradientTop = sprite.gradientTop;
             gradientBottom = sprite.gradientBottom;
+#endif
         }
 
         protected override bool DataEquals(object o)
@@ -57,6 +63,7 @@ namespace mulova.switcher
             var that = o as UISpriteData;
             return this.spriteName == that.spriteName
                 && this.atlas == that.atlas
+#if SWITCHER_DETAILED
                 && this.fillDirection == that.fillDirection
                 && this.fillAmount.ApproximatelyEquals(that.fillAmount)
                 && this.invert == that.invert
@@ -64,6 +71,7 @@ namespace mulova.switcher
                 && this.applyGradient == that.applyGradient
                 && this.gradientTop == that.gradientTop
                 && this.gradientBottom == that.gradientBottom
+#endif
             ;
         }
 
@@ -71,6 +79,7 @@ namespace mulova.switcher
         {
             return spriteName.GetHashCode()
                 + atlas?.GetHashCode() ?? 0
+#if SWITCHER_DETAILED
                 + fillDirection.GetHashCode()
                 + fillAmount.GetHashCode()
                 + invert.GetHashCode()
@@ -78,6 +87,7 @@ namespace mulova.switcher
                 + applyGradient.GetHashCode()
                 + gradientTop.GetHashCode()
                 + gradientBottom.GetHashCode()
+#endif
             ;
         }
     }
