@@ -115,7 +115,7 @@ namespace mulova.switcher
                 }
             }
 
-            for (int i = 0; i < tDiffs.Length; ++i)
+            for (int i = 0; i < roots.Length; ++i)
             {
                 var s = new SwitchSet();
                 s.name = roots[i].name;
