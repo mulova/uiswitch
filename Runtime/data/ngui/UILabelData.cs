@@ -15,6 +15,9 @@ namespace mulova.switcher
         public Color effectColor;
         public Vector2 effectDistance;
 #if SWITCHER_DETAILED
+        public Overflow overflow;
+        public int overflowWidth;
+        public NGUIText.Alignment alignment;
         public FontStyle fontStyle;
         public int fontSize;
         public bool encoding = true;
@@ -23,15 +26,12 @@ namespace mulova.switcher
         public Color gradientTop;
         public Color gradientBottom;
         public NGUIText.SymbolStyle symbolStyle;
-        public Overflow overflow;
         public int spacingX;
         public int spacingY;
         public bool useFloatSpacing;
         public float floatSpacingX;
         public float floatSpacingY;
         public bool overflowEllipsis;
-        public int overflowWidth;
-        public NGUIText.Alignment alignment;
         public Modifier modifier;
 #endif
 
@@ -44,21 +44,18 @@ namespace mulova.switcher
         protected override void ApplyTo(UILabel l)
         {
             l.enabled = enabled;
-            if (applyText)
-            {
-                l.text = text;
-            }
             l.effectStyle = effectStyle;
             l.effectColor = effectColor;
             l.effectDistance = effectDistance;
 #if SWITCHER_DETAILED
+            l.overflowMethod = overflow;
+            l.overflowWidth = overflowWidth;
+            l.alignment = alignment;
             l.fontSize = fontSize;
             l.fontStyle = fontStyle;
-            l.alignment = alignment;
             l.supportEncoding = encoding;
             l.maxLineCount = maxLineCount;
             l.symbolStyle = symbolStyle;
-            l.overflowMethod = overflow;
             l.applyGradient = applyGradient;
             l.gradientTop = gradientTop;
             l.gradientBottom = gradientBottom;
@@ -68,30 +65,30 @@ namespace mulova.switcher
             l.floatSpacingX = floatSpacingX;
             l.floatSpacingY = floatSpacingY;
             l.overflowEllipsis = overflowEllipsis;
-            l.overflowWidth = overflowWidth;
             l.modifier = modifier;
 #endif
+            if (applyText)
+            {
+                l.text = text;
+            }
         }
 
         protected override void Collect(UILabel l)
         {
             lbl = l;
             enabled = l.enabled;
-            if (applyText)
-            {
-                text = l.text;
-            }
             effectStyle = l.effectStyle;
             effectColor = l.effectColor;
             effectDistance = l.effectDistance;
 #if SWITCHER_DETAILED
+            overflow = l.overflowMethod;
+            overflowWidth = l.overflowWidth;
+            alignment = l.alignment;
             fontSize = l.fontSize;
             fontStyle = l.fontStyle;
-            alignment = l.alignment;
             encoding = l.supportEncoding;
             maxLineCount = l.maxLineCount;
             symbolStyle = l.symbolStyle;
-            overflow = l.overflowMethod;
             applyGradient = l.applyGradient;
             gradientTop = l.gradientTop;
             gradientBottom = l.gradientBottom;
@@ -101,9 +98,12 @@ namespace mulova.switcher
             floatSpacingX = l.floatSpacingX;
             floatSpacingY = l.floatSpacingY;
             overflowEllipsis = l.overflowEllipsis;
-            overflowWidth = l.overflowWidth;
             modifier = l.modifier;
 #endif
+            if (applyText)
+            {
+                text = l.text;
+            }
         }
 
         protected override bool DataEquals(object o)
@@ -115,13 +115,14 @@ namespace mulova.switcher
             && this.effectColor == that.effectColor
             && this.effectDistance == that.effectDistance
 #if SWITCHER_DETAILED
+            && this.overflow == that.overflow
+            && this.overflowWidth == that.overflowWidth
+            && this.alignment == that.alignment
             && this.fontSize == that.fontSize
             && this.fontStyle == that.fontStyle
-            && this.alignment == that.alignment
             && this.encoding == that.encoding
             && this.maxLineCount == that.maxLineCount
             && this.symbolStyle == that.symbolStyle
-            && this.overflow == that.overflow
             && this.applyGradient == that.applyGradient
             && this.gradientTop == that.gradientTop
             && this.gradientBottom == that.gradientBottom
@@ -131,7 +132,6 @@ namespace mulova.switcher
             && this.floatSpacingX == that.floatSpacingX
             && this.floatSpacingY == that.floatSpacingY
             && this.overflowEllipsis == that.overflowEllipsis
-            && this.overflowWidth == that.overflowWidth
             && this.modifier == that.modifier
 #endif
             ;
@@ -145,12 +145,13 @@ namespace mulova.switcher
             + effectColor.GetHashCode()
             + effectDistance.GetHashCode()
 #if SWITCHER_DETAILED
-            + fontSize.GetHashCode()
+            + overflow.GetHashCode()
+            + overflowWidth.GetHashCode()
             + alignment.GetHashCode()
+            + fontSize.GetHashCode()
             + encoding.GetHashCode()
             + maxLineCount.GetHashCode()
             + symbolStyle.GetHashCode()
-            + overflow.GetHashCode()
             + applyGradient.GetHashCode()
             + gradientTop.GetHashCode()
             + gradientBottom.GetHashCode()
@@ -160,7 +161,6 @@ namespace mulova.switcher
             + floatSpacingX.GetHashCode()
             + floatSpacingY.GetHashCode()
             + overflowEllipsis.GetHashCode()
-            + overflowWidth.GetHashCode()
             + modifier.GetHashCode()
 #endif
                 ;

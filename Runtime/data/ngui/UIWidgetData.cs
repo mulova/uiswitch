@@ -29,8 +29,7 @@ namespace mulova.switcher
             w.enabled = enabled;
             w.color = color;
             w.pivot = pivot;
-            w.width = width;
-            w.height = height;
+            w.SetDimensions(width, height);
             w.depth = depth;
 
             ApplyTo(w as T);
