@@ -14,12 +14,27 @@ namespace mulova.switcher
         [MenuItem("GameObject/Switcher", true, 30)]
         public static bool IsCreateSwitcher()
         {
+            foreach (var o in Selection.gameObjects)
+            {
+                if (o.TryGetComponent<Switcher>(out var s))
+                {
+                    return false;
+                }
+            }
             return Selection.gameObjects.Length > 1;
         }
 
         [MenuItem("GameObject/Switcher", false, 30)]
         public static void CreateSwitcher()
         {
+            foreach (var o in Selection.gameObjects)
+            {
+                if (o.TryGetComponent<Switcher>(out var s))
+                {
+                    EditorUtility.DisplayDialog("Aborted", "Remove Switcher script first", "OK");
+                    return;
+                }
+            }
             CreateSwitcher(Selection.gameObjects);
             Selection.activeGameObject = Selection.gameObjects[0];
         }
@@ -52,11 +67,13 @@ namespace mulova.switcher
             }
         }
 
-        private static void ExtractDiff(GameObject[] roots)
+        private static void ExtractDiff(GameObject[] go)
         {
+            var roots = new List<GameObject>(go);
+            roots.Sort((a, b) => a.transform.GetSiblingIndex() - b.transform.GetSiblingIndex());
             // just set data for the first object
             var root0 = roots[0];
-            var diffs = GameObjectDiff.CreateDiff(roots);
+            var diffs = GameObjectDiff.CreateDiff(roots.ToArray());
             var tDiffs = GameObjectDiff.FindAll<TransformData>(diffs);
             // remove TransformData from diffs
             for (int i = 0; i < diffs.Length; ++i)
@@ -115,7 +132,7 @@ namespace mulova.switcher
                 }
             }
 
-            for (int i = 0; i < roots.Length; ++i)
+            for (int i = 0; i < roots.Count; ++i)
             {
                 var s = new SwitchSet();
                 s.name = roots[i].name;
@@ -127,6 +144,7 @@ namespace mulova.switcher
                 s.visibility = vDiffs[i].ConvertAll(t => t.enabled);
                 ui.switches.Add(s);
             }
+            EditorUtility.SetDirty(ui);
             //diffList.serializedProperty.ClearArray();
         }
     }
