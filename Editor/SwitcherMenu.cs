@@ -11,7 +11,7 @@ namespace mulova.switcher
     public static class SwitcherMenu
     {
 
-        [MenuItem("GameObject/Switcher", true, 30)]
+        [MenuItem("GameObject/Switcher/Generate", true, 30)]
         public static bool IsCreateSwitcher()
         {
             foreach (var o in Selection.gameObjects)
@@ -24,10 +24,11 @@ namespace mulova.switcher
             return Selection.gameObjects.Length > 1;
         }
 
-        [MenuItem("GameObject/Switcher", false, 30)]
+        [MenuItem("GameObject/Switcher/Generate", false, 30)]
         public static void CreateSwitcher()
         {
-            foreach (var o in Selection.gameObjects)
+            var selected = Selection.gameObjects;
+            foreach (var o in selected)
             {
                 if (o.TryGetComponent<Switcher>(out var s))
                 {
@@ -35,8 +36,41 @@ namespace mulova.switcher
                     return;
                 }
             }
-            CreateSwitcher(Selection.gameObjects);
-            Selection.activeGameObject = Selection.gameObjects[0];
+            CreateSwitcher(selected);
+            var pos = new List<Vector3>();
+            for (int i=1; i< selected.Length; ++i)
+            {
+                pos.Add(selected[i].transform.localPosition);
+                Undo.DestroyObjectImmediate(selected[i]);
+            }
+            SpreadOut(selected[0].GetComponent<Switcher>(), pos);
+            Selection.activeGameObject = selected[0];
+        }
+
+        public static void SpreadOut(Switcher s, List<Vector3> pos = null)
+        {
+            for (int i=1; i<s.switches.Count; ++i)
+            {
+                var name = s.switches[i].name;
+                var p = pos != null? pos[i - 1] : s.transform.localPosition;
+                var clone = Object.Instantiate(s, p, Quaternion.identity, s.transform.parent);
+                Undo.RegisterCreatedObjectUndo(clone.gameObject, name);
+                clone.SetKey(name);
+                clone.name = name; 
+            }
+        }
+
+        [MenuItem("GameObject/Switcher/Spread Out", true, 31)]
+        public static bool IsSpreadOut()
+        {
+            return Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<Switcher>();
+        }
+
+
+        [MenuItem("GameObject/Switcher/Spread Out", false, 31)]
+        public static void SpreadOut()
+        {
+            SpreadOut(Selection.activeGameObject.GetComponent<Switcher>());
         }
 
         public static string CreateSwitcher(GameObject[] roots)

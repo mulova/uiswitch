@@ -13,7 +13,7 @@ namespace mulova.switcher
     [CustomPropertyDrawer(typeof(SwitchPreset))]
     public class SwitchPresetDrawer : PropertyDrawer
     {
-        private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>(); //
+        private Dictionary<string, PopupReorder> pool = new Dictionary<string, PopupReorder>();
 
         private PopupReorder GetKeysDrawer(SerializedProperty p)
         {
