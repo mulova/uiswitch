@@ -69,6 +69,7 @@ namespace mulova.switcher
 
             uiSwitch.showTrans = uiSwitch.switches.Find(s => s.trans.Count > 0) != null;
             uiSwitch.showAction = uiSwitch.switches.Find(s => s.action != null && s.action.GetPersistentEventCount() > 0) != null;
+            uiSwitch.showPreset = uiSwitch.preset.Count > 0;
         }
 
         private void OnDisable()
@@ -94,7 +95,7 @@ namespace mulova.switcher
                         GUILayout.Label("Preset");
                         foreach (var p in uiSwitch.preset)
                         {
-                            using (new ColorScope(Color.green, IsPreset(p.keys))) //
+                            using (new ColorScope(Color.green, IsPreset(p.keys)))
                             {
                                 if (GUILayout.Button(p.presetName, GUILayout.MaxWidth(200)))
                                 {
@@ -111,7 +112,7 @@ namespace mulova.switcher
                     GUILayout.Label("Option");
                     foreach (var s in uiSwitch.switches)
                     {
-                        using (new ColorScope(Color.green, IsActive(s.name))) //
+                        using (new ColorScope(Color.green, IsActive(s.name)))
                         {
                             if (GUILayout.Button(s.name, GUILayout.MaxWidth(200)))
                             {
@@ -205,19 +206,33 @@ namespace mulova.switcher
                 }
             } else if (uiSwitch.switches.Count > 0)
             {
-                EditorGUILayout.Separator();
-                if (!uiSwitch.showTrans)
+                if (uiSwitch.showPreset)
                 {
-                    if (GUILayout.Button("Show Transforms"))
-                    {
-                        uiSwitch.showTrans = true;
-                    }
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("preset"), true);
                 }
-                if (!uiSwitch.showAction)
+                EditorGUILayout.Separator();
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button("Show Actions"))
+                    if (!uiSwitch.showTrans)
                     {
-                        uiSwitch.showAction = true;
+                        if (GUILayout.Button("Transforms"))
+                        {
+                            uiSwitch.showTrans = true;
+                        }
+                    }
+                    if (!uiSwitch.showAction)
+                    {
+                        if (GUILayout.Button("Actions"))
+                        {
+                            uiSwitch.showAction = true;
+                        }
+                    }
+                    if (!uiSwitch.showPreset)
+                    {
+                        if (GUILayout.Button("Preset"))
+                        {
+                            uiSwitch.showPreset = true;
+                        }
                     }
                 }
             }
