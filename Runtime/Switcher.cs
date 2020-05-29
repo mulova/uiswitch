@@ -229,7 +229,7 @@ namespace mulova.switcher
 
             if (log.IsLoggable(LogType.Log))
             {
-                log.Debug("UISwitch {0}", keySet.Join(","));
+                log.Debug("Switcher {0}", keySet.Join(","));
             }
             if (match != keySet.Count)
             {
