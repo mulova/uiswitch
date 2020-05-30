@@ -27,10 +27,11 @@ namespace mulova.switcher
 #pragma warning restore 0414
         [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
         public List<SwitchSet> switches = new List<SwitchSet>();
-        public List<SwitchPreset> preset = new List<SwitchPreset>();
+        [SerializeField, HideInInspector] public List<SwitchPreset> preset = new List<SwitchPreset>();
         public bool caseSensitive = true;
         public bool showTrans { get; set; } = false; // editor only
         public bool showAction { get; set; } = false; // editor only
+        public bool showPreset { get; set; } = false; // editor only
 
         private SwitchSet DUMMY = new SwitchSet();
         private HashSet<string> keySet = new HashSet<string>();
@@ -160,8 +161,8 @@ namespace mulova.switcher
         private string NormalizeKey(object o)
         {
             if (caseSensitive)
-            {
-                return o.ToString();
+        {
+            return o.ToString();
             } else
             {
                 return o.ToString().ToLower();
@@ -228,7 +229,7 @@ namespace mulova.switcher
 
             if (log.IsLoggable(LogType.Log))
             {
-                log.Debug("UISwitch {0}", keySet.Join(","));
+                log.Debug("Switcher {0}", keySet.Join(","));
             }
             if (match != keySet.Count)
             {
