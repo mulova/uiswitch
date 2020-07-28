@@ -2,7 +2,7 @@
 {
 	"name": "mulova.switcher",
 	"displayName": "mulova.switcher",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"unity": "2019.3",
 	"description": "WISIWIG switch case library",
 	"keywords": ["mulova", "switcher"],
