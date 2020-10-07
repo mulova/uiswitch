@@ -104,6 +104,7 @@ namespace mulova.switcher
             {
                 hash = hash * 37 + animationTriggers.GetHashCode();
             }
+            hash = hash * 37 + enabled.GetHashCode();
             hash = hash * 37 + ComputeHashCode();
             return hash;
         }
