@@ -175,14 +175,14 @@ namespace mulova.switcher
                 var c = objs[i].GetComponents<Component>();
                 if (c0.Length != c.Length)
                 {
-                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs {c.Length-1}");
+                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs '{objs[i].name}': {c.Length-1}");
                 } else
                 {
                     for (int j=0; j<c.Length; ++j)
                     {
                         if (c0[j].GetType() != c[j].GetType())
                         {
-                            err.Add($"{objs[0].name}.{c0[j].GetType().Name} <-> {c[j].GetType().Name}");
+                            err.Add($"{c0[j].name}.{c0[j].GetType().Name} <-> {c[j].name}.{c[j].GetType().Name}");
                         }
                     }
                 }
