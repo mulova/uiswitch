@@ -221,6 +221,12 @@ namespace mulova.switcher
                 && Mathf.Approximately(v1.z, v2.z);
         }
 
+        public static bool ApproximatelyEquals(this Vector2 v1, Vector2 v2)
+        {
+            return Mathf.Approximately(v1.x, v2.x)
+                && Mathf.Approximately(v1.y, v2.y);
+        }
+
         public static bool ApproximatelyEquals(this Quaternion first, Quaternion second)
         {
             return (Mathf.Approximately(first.x, second.x) && Mathf.Approximately(first.y, second.y)

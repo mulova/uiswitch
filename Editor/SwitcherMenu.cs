@@ -10,6 +10,15 @@ namespace mulova.switcher
 {
     public static class SwitcherMenu
     {
+        public static List<GameObject> sortedSelection
+        {
+            get
+            {
+                var roots = new List<GameObject>(Selection.gameObjects);
+                roots.Sort((a, b) => a.transform.GetSiblingIndex() - b.transform.GetSiblingIndex());
+                return roots;
+            }
+        }
 
         [MenuItem("GameObject/Switcher/Generate", true, 30)]
         public static bool IsCreateSwitcher()
@@ -27,18 +36,17 @@ namespace mulova.switcher
         [MenuItem("GameObject/Switcher/Generate", false, 30)]
         public static void CreateSwitcher()
         {
-            var selected = Selection.gameObjects;
+            var selected = sortedSelection;
             foreach (var o in selected)
             {
                 if (o.TryGetComponent<Switcher>(out var s))
                 {
-                    EditorUtility.DisplayDialog("Aborted", "Remove Switcher script first", "OK");
-                    return;
+                    Object.DestroyImmediate(s);
                 }
             }
-            CreateSwitcher(selected);
             var pos = new List<Vector3>();
-            for (int i=1; i< selected.Length; ++i)
+            CreateSwitcher(selected);
+            for (int i=1; i< selected.Count; ++i)
             {
                 pos.Add(selected[i].transform.localPosition);
                 Undo.DestroyObjectImmediate(selected[i]);
@@ -73,7 +81,7 @@ namespace mulova.switcher
             SpreadOut(Selection.activeGameObject.GetComponent<Switcher>());
         }
 
-        public static string CreateSwitcher(GameObject[] roots)
+        public static string CreateSwitcher(List<GameObject> roots)
         {
             var duplicates = GameObjectDiff.GetDuplicateSiblingNames(roots);
             if (duplicates.Count > 0)
@@ -90,7 +98,7 @@ namespace mulova.switcher
                 var err = GameObjectDiff.GetComponentMismatch(roots.ConvertAll(o => o.transform));
                 if (err.Count == 0)
                 {
-                    Undo.RecordObjects(roots, "Diff");
+                    Undo.RecordObjects(roots.ToArray(), "Diff");
                     ExtractDiff(roots);
                     return null;
                 }
@@ -101,10 +109,8 @@ namespace mulova.switcher
             }
         }
 
-        private static void ExtractDiff(GameObject[] go)
+        private static void ExtractDiff(List<GameObject> roots)
         {
-            var roots = new List<GameObject>(go);
-            roots.Sort((a, b) => a.transform.GetSiblingIndex() - b.transform.GetSiblingIndex());
             // just set data for the first object
             var root0 = roots[0];
             var diffs = GameObjectDiff.CreateDiff(roots.ToArray());

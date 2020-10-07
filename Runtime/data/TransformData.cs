@@ -9,14 +9,14 @@ namespace mulova.switcher
     [Serializable]
     public class TransformData : ICompData
     {
+        public Transform trans;
         public Vector3 pos;
         public Quaternion rot;
         public Vector3 scale;
-        public Transform trans;
         public bool enabled;
 
         public bool active => enabled;
-        public Type type => typeof(Transform);
+        public virtual Type type => typeof(Transform);
 
         public Component target
         {
@@ -24,7 +24,7 @@ namespace mulova.switcher
             set { trans = value as Transform; }
         }
 
-        public void ApplyTo(Component c)
+        public virtual void ApplyTo(Component c)
         {
             var t = c as Transform;
             t.localPosition = pos;
@@ -33,7 +33,7 @@ namespace mulova.switcher
             t.gameObject.SetActive(enabled);
         }
 
-        public void Collect(Component c)
+        public virtual void Collect(Component c)
         {
             trans = c as Transform;
             pos = trans.localPosition;
@@ -60,7 +60,7 @@ namespace mulova.switcher
              + enabled.GetHashCode();
         }
 
-        public bool TransformEquals(TransformData that)
+        public virtual bool TransformEquals(TransformData that)
         {
             return this.pos.ApproximatelyEquals(that.pos)
                 && this.rot.ApproximatelyEquals(that.rot)
