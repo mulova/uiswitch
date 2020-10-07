@@ -14,11 +14,11 @@ namespace mulova.switcher
         public Type type => typeof(G);
         public bool active => enabled;
 
-        public G img;
+        public G g;
         public Component target
         {
-            get { return img; }
-            set { img = value as G; }
+            get { return g; }
+            set { g = value as G; }
         }
 
         protected abstract void ApplyTo(G g);
@@ -37,7 +37,7 @@ namespace mulova.switcher
 
         public void Collect(Component c)
         {
-            var g = c as G;
+            g = c as G;
             raycastTarget = g.raycastTarget;
             color = g.color;
             enabled = g.enabled;

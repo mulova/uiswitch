@@ -24,7 +24,6 @@ namespace mulova.switcher
 
         protected override void Collect(Image img)
         {
-            this.img = img;
             sprite = img.sprite;
             imageType = img.type;
             useSpriteMesh = img.useSpriteMesh;
