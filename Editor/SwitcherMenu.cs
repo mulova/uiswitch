@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 #if CORE_LIB
@@ -37,31 +37,42 @@ namespace mulova.switcher
         public static void CreateSwitcher()
         {
             var selected = sortedSelection;
-            foreach (var o in selected)
+            var switchers = selected.FindAll(o => o.GetComponent<Switcher>() != null);
+            if (switchers.Count == 0)
             {
-                if (o.TryGetComponent<Switcher>(out var s))
+                var pos = new List<TransformData>();
+                var err = CreateSwitcher(selected);
+                if (string.IsNullOrEmpty(err))
                 {
-                    Object.DestroyImmediate(s);
+                    for (int i = 1; i < selected.Count; ++i)
+                    {
+                        pos.Add(CompDataGenerator.instance.GetComponentData(selected[i].transform) as TransformData);
+                        Undo.DestroyObjectImmediate(selected[i]);
+                    }
+                    SpreadOut(selected[0].GetComponent<Switcher>(), pos);
+                    Selection.activeGameObject = selected[0];
+                } else
+                {
+                    Debug.LogError(err);
+                    EditorUtility.DisplayDialog("Error", "Check out the log for more detail", "OK");
                 }
-            }
-            var pos = new List<Vector3>();
-            CreateSwitcher(selected);
-            for (int i=1; i< selected.Count; ++i)
+            } else if (switchers.Count != selected.Count)
             {
-                pos.Add(selected[i].transform.localPosition);
-                Undo.DestroyObjectImmediate(selected[i]);
+                // this method is called several times (the same count as the selected game object)
+                EditorUtility.DisplayDialog("Error", "Remove switcher first", "OK");
             }
-            SpreadOut(selected[0].GetComponent<Switcher>(), pos);
-            Selection.activeGameObject = selected[0];
         }
 
-        public static void SpreadOut(Switcher s, List<Vector3> pos = null)
+        public static void SpreadOut(Switcher s, List<TransformData> pos = null)
         {
             for (int i=1; i<s.switches.Count; ++i)
             {
                 var name = s.switches[i].name;
-                var p = pos != null? pos[i - 1] : s.transform.localPosition;
-                var clone = Object.Instantiate(s, p, Quaternion.identity, s.transform.parent);
+                var clone = Object.Instantiate(s, s.transform.parent);
+                if (pos != null && pos.Count > i-1)
+                {
+                    pos[i - 1].ApplyTo(clone.transform);
+                }
                 Undo.RegisterCreatedObjectUndo(clone.gameObject, name);
                 clone.SetKey(name);
                 clone.name = name; 

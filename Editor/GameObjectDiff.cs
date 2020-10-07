@@ -12,8 +12,6 @@ namespace mulova.switcher
 {
     public static class GameObjectDiff
     {
-        private static CompDataGenerator dataGen = new CompDataGenerator();
-
         public static void CreateMissingChildren(IList<Transform> roots)
         {
             var children = GetChildUnion(roots);
@@ -95,7 +93,7 @@ namespace mulova.switcher
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = dataGen.GetComponentData(comps[i][index], comps[i][index].GetType());
+                arr[i] = CompDataGenerator.instance.GetComponentData(comps[i][index]);
                 if (!diff && i != 0 && arr[i] != null && !arr[i].Equals(arr[0]))
                 {
                     diff = true;
