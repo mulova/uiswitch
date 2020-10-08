@@ -190,13 +190,12 @@ namespace mulova.switcher
                     if (GUILayout.Button("Extract Diff"))
                     {
                         serializedObject.Update();
-                        var roots = uiSwitch.objs.ToArray();
-                        Undo.RecordObjects(roots, "Create Switcher");
-                        createSwitcherErr = SwitcherMenu.CreateSwitcher(roots);
+                        Undo.RecordObjects(uiSwitch.objs.ToArray(), "Create Switcher");
+                        createSwitcherErr = SwitcherMenu.CreateSwitcher(uiSwitch.objs);
                         if (createSwitcherErr.IsEmpty())
                         {
                             Undo.DestroyObjectImmediate(uiSwitch);
-                            Selection.activeGameObject = roots[0];
+                            Selection.activeGameObject = uiSwitch.objs[0];
                         }
                     }
                 }

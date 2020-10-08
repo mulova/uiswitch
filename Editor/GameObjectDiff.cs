@@ -12,8 +12,6 @@ namespace mulova.switcher
 {
     public static class GameObjectDiff
     {
-        private static CompDataGenerator dataGen = new CompDataGenerator();
-
         public static void CreateMissingChildren(IList<Transform> roots)
         {
             var children = GetChildUnion(roots);
@@ -95,7 +93,7 @@ namespace mulova.switcher
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = dataGen.GetComponentData(comps[i][index], comps[i][index].GetType());
+                arr[i] = CompDataGenerator.instance.GetComponentData(comps[i][index]);
                 if (!diff && i != 0 && arr[i] != null && !arr[i].Equals(arr[0]))
                 {
                     diff = true;
@@ -177,14 +175,14 @@ namespace mulova.switcher
                 var c = objs[i].GetComponents<Component>();
                 if (c0.Length != c.Length)
                 {
-                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs {c.Length-1}");
+                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs '{objs[i].name}': {c.Length-1}");
                 } else
                 {
                     for (int j=0; j<c.Length; ++j)
                     {
                         if (c0[j].GetType() != c[j].GetType())
                         {
-                            err.Add($"{objs[0].name}.{c0[j].GetType().Name} <-> {c[j].GetType().Name}");
+                            err.Add($"{c0[j].name}.{c0[j].GetType().Name} <-> {c[j].name}.{c[j].GetType().Name}");
                         }
                     }
                 }
