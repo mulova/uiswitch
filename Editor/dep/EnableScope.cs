@@ -4,13 +4,20 @@ using UnityEngine;
 
 namespace mulova.switcher
 {
-    internal class EnableScope : IDisposable
+    public class EnableScope : IDisposable
     {
         private bool enabled;
-        public EnableScope(bool e)
+        public EnableScope(bool e, bool overwrite = true)
         {
             enabled = GUI.enabled;
-            GUI.enabled = e;
+            if (overwrite)
+            {
+                GUI.enabled = e;
+            }
+            else
+            {
+                GUI.enabled &= e;
+            }
         }
 
         public void Dispose()

@@ -5,7 +5,7 @@ using Color = UnityEngine.Color;
 
 namespace mulova.switcher
 {
-    internal class ColorScope : IDisposable
+    public class ColorScope : IDisposable
     {
         private Color old;
         public ColorScope(Color c, bool apply = true)
