@@ -25,7 +25,7 @@ namespace mulova.switcher
 #pragma warning disable 0414
         [SerializeField, EnumType] private string enumType = "";
 #pragma warning restore 0414
-        [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
+        [SerializeField] public List<GameObject> objs = new List<GameObject>();
         public List<SwitchSet> switches = new List<SwitchSet>();
         [SerializeField, HideInInspector] public List<SwitchPreset> preset = new List<SwitchPreset>();
         public bool caseSensitive = true;
@@ -160,10 +160,32 @@ namespace mulova.switcher
 
         public void Merge(Switcher merged)
         {
+            var srcEmptyVisibility = new List<bool>();
+            foreach (var o in objs)
+            {
+                srcEmptyVisibility.Add(false);
+            }
+            var dstEmptyVisibility = new List<bool>();
+            foreach (var o in merged.objs)
+            {
+                dstEmptyVisibility.Add(false);
+            }
+            // merge objs
+            foreach (var o in merged.objs)
+            {
+                var matching = GetMatchingSibling(merged.transform, o.transform, transform);
+                objs.Add(matching.gameObject);
+            }
+            // merge visibility
+            foreach (var s in switches)
+            {
+                s.visibility.AddRange(dstEmptyVisibility);
+            }
             // Replace components
             foreach (var s in merged.switches)
             {
                 var clone = s.Clone() as SwitchSet;
+                clone.visibility.InsertRange(0, srcEmptyVisibility);
                 for (int i=0; i<clone.trans.Count; ++i)
                 {
                     clone.trans[i] = GetMatchingSibling(merged.transform, clone.trans[i], transform);
@@ -175,6 +197,7 @@ namespace mulova.switcher
                     clone.data[i].target = GetMatchingComponent(clone.data[i].target, matching);
                 }
 #endif
+                switches.Add(clone);
             }
         }
 
