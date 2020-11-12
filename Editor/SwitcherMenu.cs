@@ -92,6 +92,29 @@ namespace mulova.switcher
             SpreadOut(Selection.activeGameObject.GetComponent<Switcher>());
         }
 
+        [MenuItem("GameObject/Switcher/Merge Switchers", true, 32)]
+        public static bool IsMergeSwitchers()
+        {
+            var sel = Selection.gameObjects;
+            var doesAllSelectionHaveSwitcher = sel.FindAll(s => s.GetComponent<Switcher>()).Count == sel.Length;
+            return sel.Length > 1 && doesAllSelectionHaveSwitcher && GameObjectDiff.IsChildrenMatches(sel.ConvertAll(o=>o.transform));
+        }
+
+        [MenuItem("GameObject/Switcher/Merge Switchers", false, 32)]
+        public static void MergeSwitchers()
+        {
+            var selected = sortedSelection;
+            var switchers = selected.ConvertAll(o => o.GetComponent<Switcher>());
+            
+            Undo.RecordObjects(switchers.ToArray(), "Merge");
+            for (int i=1; i<switchers.Count; ++i)
+            {
+                switchers[0].Merge(switchers[i]);
+            }
+            EditorUtil.SetDirty(switchers[0]);
+            Selection.objects = new[] { selected[0] };
+        }
+
         public static string CreateSwitcher(List<GameObject> roots)
         {
             var duplicates = GameObjectDiff.GetDuplicateSiblingNames(roots);
