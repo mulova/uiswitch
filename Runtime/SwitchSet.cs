@@ -42,6 +42,9 @@ namespace mulova.switcher
             e.visibility = new List<bool>(visibility);
             e.trans = new List<Transform>(trans);
             e.pos = new List<Vector3>(pos);
+#if UNITY_2019_1_OR_NEWER
+            e.data = new List<ICompData>(data);
+#endif
             return e;
         }
 

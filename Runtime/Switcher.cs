@@ -158,6 +158,51 @@ namespace mulova.switcher
             }
         }
 
+        public void Merge(Switcher merged)
+        {
+            // Replace components
+            foreach (var s in merged.switches)
+            {
+                var clone = s.Clone() as SwitchSet;
+                for (int i=0; i<clone.trans.Count; ++i)
+                {
+                    clone.trans[i] = GetMatchingSibling(merged.transform, clone.trans[i], transform);
+                }
+#if UNITY_2019_1_OR_NEWER
+                for (int i = 0; i < clone.data.Count; ++i)
+                {
+                    var matching = GetMatchingSibling(merged.transform, clone.data[i].target.transform, transform);
+                    clone.data[i].target = GetMatchingComponent(clone.data[i].target, matching);
+                }
+#endif
+            }
+        }
+
+        private Component GetMatchingComponent(Component src, Transform dst)
+        {
+            var srcComps = src.GetComponents<Component>();
+            var index = Array.IndexOf(srcComps, src);
+            var dstComps = dst.GetComponents<Component>();
+            return dstComps[index];
+        }
+
+        private Transform GetMatchingSibling(Transform srcRoot, Transform src, Transform dstRoot)
+        {
+            var hierarchy = new List<int>();
+            while (src != srcRoot)
+            {
+                hierarchy.Add(src.GetSiblingIndex());
+                src = src.parent;
+            }
+            hierarchy.Reverse();
+            var trans = dstRoot;
+            foreach (var index in hierarchy)
+            {
+                trans = trans.GetChild(index);
+            }
+            return trans;
+        }
+
         private string NormalizeKey(object o)
         {
             if (caseSensitive)
