@@ -100,6 +100,7 @@ namespace mulova.switcher
                 }
                 if (i != 0)
                 {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
                     // Reset the position of root transform
                     if (isRoot && (arr[0] is TransformData))
@@ -119,6 +120,8 @@ namespace mulova.switcher
                     }
 =======
 >>>>>>> develop
+=======
+>>>>>>> Stashed changes
                     if (!diff && arr[i] != null && !arr[i].Equals(arr[0]))
                     {
                         diff = true;

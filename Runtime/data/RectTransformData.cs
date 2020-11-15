@@ -23,7 +23,10 @@ namespace mulova.switcher
             base.ApplyTo(c);
             var r = c as RectTransform;
             r.pivot = pivot;
-            r.anchoredPosition = anchoredPosition;
+            if (!isRoot)
+            {
+                r.anchoredPosition = anchoredPosition;
+            }
             r.sizeDelta = sizeDelta;
             r.anchorMax = anchorMax;
             r.anchorMin = anchorMin;
@@ -45,7 +48,7 @@ namespace mulova.switcher
         {
             var that = (RectTransformData)obj;
             return base.Equals(obj)
-             && this.anchoredPosition == that.anchoredPosition
+             && (isRoot || this.anchoredPosition == that.anchoredPosition)
              && this.anchorMax == that.anchorMax
              && this.anchorMin == that.anchorMin
              && this.pivot == that.pivot
@@ -67,7 +70,7 @@ namespace mulova.switcher
         {
             var that = t as RectTransformData;
             return base.TransformEquals(that)
-                && this.anchoredPosition.ApproximatelyEquals(that.anchoredPosition)
+                && (isRoot || this.anchoredPosition.ApproximatelyEquals(that.anchoredPosition))
                 && this.anchorMax.ApproximatelyEquals(that.anchorMax)
                 && this.anchorMin.ApproximatelyEquals(that.anchorMin)
                 && this.pivot.ApproximatelyEquals(that.pivot)
