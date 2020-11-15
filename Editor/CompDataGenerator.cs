@@ -14,7 +14,7 @@ namespace mulova.switcher
         internal static CompDataGenerator instance = new CompDataGenerator();
         private Dictionary<Type, Type> pool;
 
-        public ICompData GetComponentData(Component c)
+        public ICompData GetComponentData(Component c, bool isRoot = false)
         {
             var dataType = FindDataType(c.GetType());
             if (dataType != null)
