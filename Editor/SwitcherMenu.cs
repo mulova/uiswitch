@@ -33,6 +33,39 @@ namespace mulova.switcher
             return Selection.gameObjects.Length > 1;
         }
 
+        public class RootData
+        {
+            public int siblingIndex;
+            public bool rectTransform;
+            public Vector2 anchorPosition;
+            public Vector3 position;
+
+            public RootData(Transform t)
+            {
+                rectTransform = t is RectTransform;
+                siblingIndex = t.GetSiblingIndex();
+                if (rectTransform)
+                {
+                    anchorPosition = ((RectTransform)t).anchoredPosition;
+                } else
+                {
+                    position = t.localPosition;
+                }
+            }
+
+            public void ApplyTo(Transform t)
+            {
+                if (rectTransform)
+                {
+                    ((RectTransform)t).anchoredPosition = anchorPosition;
+                } else
+                {
+                    t.localPosition = position;
+                }
+                t.SetSiblingIndex(siblingIndex);
+            }
+        }
+
         [MenuItem("GameObject/Switcher/Generate", false, 30)]
         public static void CreateSwitcher()
         {
@@ -40,16 +73,16 @@ namespace mulova.switcher
             var switchers = selected.FindAll(o => o.GetComponent<Switcher>() != null);
             if (switchers.Count == 0)
             {
-                var pos = new List<TransformData>();
+                var rootData = new List<RootData>();
                 var err = CreateSwitcher(selected);
                 if (string.IsNullOrEmpty(err))
                 {
                     for (int i = 1; i < selected.Count; ++i)
                     {
-                        pos.Add(CompDataGenerator.instance.GetComponentData(selected[i].transform) as TransformData);
+                        rootData.Add(new RootData(selected[i].transform));
                         Undo.DestroyObjectImmediate(selected[i]);
                     }
-                    SpreadOut(selected[0].GetComponent<Switcher>(), pos);
+                    SpreadOut(selected[0].GetComponent<Switcher>(), rootData);
                     Selection.activeGameObject = selected[0];
                 } else
                 {
@@ -63,19 +96,19 @@ namespace mulova.switcher
             }
         }
 
-        public static void SpreadOut(Switcher s, List<TransformData> pos = null)
+        public static void SpreadOut(Switcher s, List<RootData> rootData = null)
         {
             for (int i=1; i<s.switches.Count; ++i)
             {
                 var name = s.switches[i].name;
                 var clone = Object.Instantiate(s, s.transform.parent);
-                if (pos != null && pos.Count > i-1)
-                {
-                    pos[i - 1].ApplyTo(clone.transform);
-                }
                 Undo.RegisterCreatedObjectUndo(clone.gameObject, name);
                 clone.SetKey(name);
                 clone.name = name; 
+                if (rootData != null && rootData.Count > i-1)
+                {
+                    rootData[i - 1].ApplyTo(clone.transform);
+                }
             }
         }
 
