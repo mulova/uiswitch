@@ -63,22 +63,22 @@ namespace mulova.switcher
         {
             var parents = roots.ConvertAll(o => o.transform);
             var store = parents.ConvertAll(p => new List<ICompData>());
-            GetDiffRecursively(parents, store);
+            GetDiffRecursively(parents, store, true);
             return store;
         }
 
-        private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store)
+        private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store, bool isRoot)
         {
             var comps = parents.ConvertAll(p => p.GetComponents<Component>().ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
-                GetComponentDiff(comps, i, store);
+                GetComponentDiff(comps, i, store, isRoot);
             }
             // child diff
             for (int i=0; i < parents[0].childCount; ++i)
             {
                 var children = parents.ConvertAll(p => p.GetChild(i));
-                GetDiffRecursively(children, store);
+                GetDiffRecursively(children, store, false);
             }
         }
 
