@@ -14,6 +14,7 @@ namespace mulova.switcher
         public Quaternion rot;
         public Vector3 scale;
         public bool enabled;
+        public bool isRoot;
 
         public bool active => enabled;
         public virtual Type type => typeof(Transform);
@@ -27,7 +28,10 @@ namespace mulova.switcher
         public virtual void ApplyTo(Component c)
         {
             var t = c as Transform;
-            t.localPosition = pos;
+            if (!isRoot)
+            {
+                t.localPosition = pos;
+            }
             t.localRotation = rot;
             t.localScale = scale;
             t.gameObject.SetActive(enabled);
@@ -40,29 +44,33 @@ namespace mulova.switcher
             rot = trans.localRotation;
             scale = trans.localScale;
             enabled = c.gameObject.activeSelf;
+            isRoot = c.GetComponent<Switcher>() != null;
         }
 
         public override bool Equals(object obj)
         {
             var that = (TransformData)obj;
-            return this.pos == that.pos
+            return (isRoot || this.pos == that.pos)
              && this.rot == that.rot
              && this.scale == that.scale
-             && this.enabled == that.enabled;
+             && this.enabled == that.enabled
+             && this.isRoot == that.isRoot;
         }
 
         public override int GetHashCode()
         {
-            return pos.GetHashCode()
-             + rot.GetHashCode()
-             + scale.GetHashCode()
-             + trans.name.GetHashCode()
-             + enabled.GetHashCode();
+            var hash = base.GetHashCode();
+            hash = hash * 37 + rot.GetHashCode();
+            hash = hash * 37 + scale.GetHashCode();
+            hash = hash * 37 + trans.name.GetHashCode();
+            hash = hash * 37 + enabled.GetHashCode();
+            hash = hash * 37 + isRoot.GetHashCode();
+            return hash;
         }
 
         public virtual bool TransformEquals(TransformData that)
         {
-            return this.pos.ApproximatelyEquals(that.pos)
+            return (isRoot || this.pos.ApproximatelyEquals(that.pos))
                 && this.rot.ApproximatelyEquals(that.rot)
                 && this.scale.ApproximatelyEquals(that.scale);
         }
