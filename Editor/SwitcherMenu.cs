@@ -228,16 +228,19 @@ namespace mulova.switcher
             }
             for (int c = 0; c < tDiffs[0].Count; ++c)
             {
-                bool diff = false;
-                for (int i = 1; i < tDiffs.Length && !diff; ++i)
+                if (!tDiffs[0][c].isRoot)
                 {
-                    diff |= !tDiffs[0][c].TransformEquals(tDiffs[i][c]);
-                }
-                if (diff)
-                {
-                    for (int i = 0; i < tDiffs.Length; ++i)
+                    bool diff = false;
+                    for (int i = 1; i < tDiffs.Length && !diff; ++i)
                     {
-                        posDiffs[i].Add(tDiffs[i][c]);
+                        diff |= !tDiffs[0][c].TransformEquals(tDiffs[i][c]);
+                    }
+                    if (diff)
+                    {
+                        for (int i = 0; i < tDiffs.Length; ++i)
+                        {
+                            posDiffs[i].Add(tDiffs[i][c]);
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -87,13 +87,17 @@ namespace mulova.switcher
         /// </summary>
         /// <returns>The diff.</returns>
         /// <param name="comps">return Component data if all components' data are the same.</param>
-        private static void GetComponentDiff(Component[][] comps, int index, List<ICompData>[] store)
+        private static void GetComponentDiff(Component[][] comps, int index, List<ICompData>[] store, bool isRoot)
         {
             var arr = new ICompData[comps.Length];
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
                 arr[i] = CompDataGenerator.instance.GetComponentData(comps[i][index]);
+                if (arr[i] is TransformData)
+                {
+                    (arr[i] as TransformData).isRoot = isRoot;
+                }
                 if (i != 0)
                 {
                     if (!diff && arr[i] != null && !arr[i].Equals(arr[0]))
