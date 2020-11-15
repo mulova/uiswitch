@@ -99,9 +99,18 @@ namespace mulova.switcher
                     // Reset the position of root transform
                     if (isRoot && (arr[0] is TransformData))
                     {
-                        var src = arr[0] as TransformData;
-                        var dst = arr[i] as TransformData;
-                        dst.pos = src.pos;
+                        if (arr[0].GetType() == typeof(RectTransformData))
+                        {
+                            var src = arr[0] as RectTransformData;
+                            var dst = arr[i] as RectTransformData;
+                            dst.anchoredPosition = src.anchoredPosition;
+                        }
+                        else
+                        {
+                            var src = arr[0] as TransformData;
+                            var dst = arr[i] as TransformData;
+                            dst.pos = src.pos;
+                        }
                     }
                     if (!diff && arr[i] != null && !arr[i].Equals(arr[0]))
                     {
@@ -111,7 +120,7 @@ namespace mulova.switcher
             }
             if (diff)
             {
-                for (int i=0; i<arr.Length; ++i)
+                for (int i = 0; i < arr.Length; ++i)
                 {
                     arr[i].target = arr[0].target;
                     store[i].Add(arr[i]);
