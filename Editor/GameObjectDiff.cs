@@ -100,28 +100,6 @@ namespace mulova.switcher
                 }
                 if (i != 0)
                 {
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-                    // Reset the position of root transform
-                    if (isRoot && (arr[0] is TransformData))
-                    {
-                        if (arr[0].GetType() == typeof(RectTransformData))
-                        {
-                            var src = arr[0] as RectTransformData;
-                            var dst = arr[i] as RectTransformData;
-                            dst.anchoredPosition = src.anchoredPosition;
-                        }
-                        else
-                        {
-                            var src = arr[0] as TransformData;
-                            var dst = arr[i] as TransformData;
-                            dst.pos = src.pos;
-                        }
-                    }
-=======
->>>>>>> develop
-=======
->>>>>>> Stashed changes
                     if (!diff && arr[i] != null && !arr[i].Equals(arr[0]))
                     {
                         diff = true;
