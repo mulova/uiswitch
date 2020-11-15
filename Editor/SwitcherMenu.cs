@@ -152,7 +152,7 @@ namespace mulova.switcher
             // remove TransformData from diffs
             for (int i = 0; i < diffs.Length; ++i)
             {
-                diffs[i] = diffs[i].FindAll(d => !(d is TransformData));
+                diffs[i] = diffs[i].FindAll(d => !(d.GetType() == typeof(TransformData)));
             }
 
             var ui = root0.GetComponent<Switcher>();
