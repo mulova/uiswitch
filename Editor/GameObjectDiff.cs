@@ -63,22 +63,22 @@ namespace mulova.switcher
         {
             var parents = roots.ConvertAll(o => o.transform);
             var store = parents.ConvertAll(p => new List<ICompData>());
-            GetDiffRecursively(parents, store, true);
+            GetDiffRecursively(parents, store);
             return store;
         }
 
-        private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store, bool isRoot)
+        private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store)
         {
             var comps = parents.ConvertAll(p => p.GetComponents<Component>().ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
-                GetComponentDiff(comps, i, store, isRoot);
+                GetComponentDiff(comps, i, store);
             }
             // child diff
             for (int i=0; i < parents[0].childCount; ++i)
             {
                 var children = parents.ConvertAll(p => p.GetChild(i));
-                GetDiffRecursively(children, store, false);
+                GetDiffRecursively(children, store);
             }
         }
 
@@ -87,22 +87,15 @@ namespace mulova.switcher
         /// </summary>
         /// <returns>The diff.</returns>
         /// <param name="comps">return Component data if all components' data are the same.</param>
-        private static void GetComponentDiff(Component[][] comps, int index, List<ICompData>[] store, bool isRoot = false)
+        private static void GetComponentDiff(Component[][] comps, int index, List<ICompData>[] store)
         {
             var arr = new ICompData[comps.Length];
             bool diff = false;
             for (int i = 0; i < arr.Length; ++i)
             {
-                arr[i] = CompDataGenerator.instance.GetComponentData(comps[i][index], isRoot);
+                arr[i] = CompDataGenerator.instance.GetComponentData(comps[i][index]);
                 if (i != 0)
                 {
-                    // Reset the position of root transform
-                    if (isRoot && (arr[0] is TransformData))
-                    {
-                        var src = arr[0] as TransformData;
-                        var dst = arr[i] as TransformData;
-                        dst.pos = src.pos;
-                    }
                     if (!diff && arr[i] != null && !arr[i].Equals(arr[0]))
                     {
                         diff = true;

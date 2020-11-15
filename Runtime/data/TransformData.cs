@@ -14,6 +14,7 @@ namespace mulova.switcher
         public Quaternion rot;
         public Vector3 scale;
         public bool enabled;
+        public bool isRoot;
 
         public bool active => enabled;
         public virtual Type type => typeof(Transform);
@@ -27,7 +28,10 @@ namespace mulova.switcher
         public virtual void ApplyTo(Component c)
         {
             var t = c as Transform;
-            t.localPosition = pos;
+            if (!isRoot)
+            {
+                t.localPosition = pos;
+            }
             t.localRotation = rot;
             t.localScale = scale;
             t.gameObject.SetActive(enabled);
@@ -40,6 +44,7 @@ namespace mulova.switcher
             rot = trans.localRotation;
             scale = trans.localScale;
             enabled = c.gameObject.activeSelf;
+            isRoot = c.GetComponent<Switcher>() != null;
         }
 
         public override bool Equals(object obj)
