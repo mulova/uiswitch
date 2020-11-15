@@ -80,6 +80,9 @@ namespace mulova.switcher
                     for (int i = 1; i < selected.Count; ++i)
                     {
                         rootData.Add(new RootData(selected[i].transform));
+                    }
+                    for (int i = 1; i < selected.Count; ++i)
+                    {
                         Undo.DestroyObjectImmediate(selected[i]);
                     }
                     SpreadOut(selected[0].GetComponent<Switcher>(), rootData);
