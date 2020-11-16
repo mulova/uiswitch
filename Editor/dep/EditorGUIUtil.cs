@@ -22,9 +22,10 @@ namespace mulova.switcher
                 bool changed = false;
                 Color old = GUI.backgroundColor;
                 GUI.backgroundColor = Color.red;
+                var sel = selection != null ? selection.ToString() : "-";
                 if (label == null)
                 {
-                    int i = EditorGUI.Popup(bound, 1, new string[] { "-", selection.ToString() });
+                    int i = EditorGUI.Popup(bound, 1, new string[] { "-", sel });
                     if (i == 0)
                     {
                         selection = default(T);
@@ -33,7 +34,7 @@ namespace mulova.switcher
                 }
                 else
                 {
-                    int i = EditorGUI.Popup(bound, label, 1, new string[] { "-", selection.ToString() });
+                    int i = EditorGUI.Popup(bound, label, 1, new string[] { "-", sel });
                     if (i == 0)
                     {
                         selection = default(T);
