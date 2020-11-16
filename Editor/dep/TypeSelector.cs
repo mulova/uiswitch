@@ -32,7 +32,7 @@ namespace mulova.switcher
 
         public void SetBaseType(Type baseType)
         {
-            List<Type> classes = baseType.FindClasses();
+            List<Type> classes = baseType.FindTypes();
             types = new Dictionary<string, Type>();
             foreach (Type t in classes)
             {
@@ -57,9 +57,9 @@ namespace mulova.switcher
             Type oldType = type;
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Type", GUILayout.Width(50));
-            if (((type == null && EditorGUILayoutUtil.TextField(null, ref typeName))
-            || (type != null && EditorGUILayoutUtil.TextField(null, ref typeName, EditorStyles.toolbarTextField)))
-            && typeName.Length > 0)
+            if (((type == null && EditorGUILayoutUtil.DelayedTextField(null, ref typeName))
+                || (type != null && EditorGUILayoutUtil.DelayedTextField(null, ref typeName, EditorStyles.toolbarTextField)))
+                && typeName.Length > 0)
             {
                 type = types.Get(typeName);
                 if (!typeName.IsEmpty() && typeName.Length >= 2)
@@ -69,7 +69,7 @@ namespace mulova.switcher
                     {
                         var index = pair.Key.LastIndexOf(typeName, StringComparison.OrdinalIgnoreCase);
                         if (index >= 0 && (fullNameSearch
-                        || (!fullNameSearch && index >= pair.Key.LastIndexOf('.'))))
+                            || (!fullNameSearch && index >= pair.Key.LastIndexOf('.'))))
                         {
                             typeMatches.Add(pair.Value);
                         }

@@ -96,6 +96,25 @@ namespace mulova.switcher
             str = newStr;
             return changed;
         }
+
+        public static bool DelayedTextField(string label, ref string str, params GUILayoutOption[] options)
+        {
+            return DelayedTextField(label, ref str, EditorStyles.textField, options);
+        }
+
+        public static bool DelayedTextField(string label, ref string str, GUIStyle style, params GUILayoutOption[] options)
+        {
+            if (str == null)
+            {
+                str = "";
+            }
+            string newStr = label == null ?
+            EditorGUILayout.DelayedTextField(str, style, options) :
+            EditorGUILayout.DelayedTextField(label, str, style, options);
+            bool changed = newStr != str;
+            str = newStr;
+            return changed;
+        }
     }
 }
 
