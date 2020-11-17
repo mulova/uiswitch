@@ -12,3 +12,5 @@
 # Citation
 - SerializeRefereneInspectorUI from https://forum.unity.com/threads/serializereference-genericserializedreferenceinspectorui.813366/
 
+# Example
+- [![Switcher what's this?](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/dZtH-9GAWXE)
