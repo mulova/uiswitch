@@ -105,6 +105,7 @@ namespace mulova.switcher
             {
                 var name = s.switches[i].name;
                 var clone = Object.Instantiate(s, s.transform.parent);
+                clone.transform.SetSiblingIndex(s.transform.GetSiblingIndex() + i);
                 Undo.RegisterCreatedObjectUndo(clone.gameObject, name);
                 clone.SetKey(name);
                 clone.name = name; 

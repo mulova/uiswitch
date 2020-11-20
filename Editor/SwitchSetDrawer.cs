@@ -20,6 +20,89 @@ namespace mulova.switcher
         public static readonly Color SelectedColor = Color.green;
         public static readonly Color ChangedSelectedColor = Color.red;
 
+        protected override void OnGUI(SerializedProperty p, Rect bound)
+        {
+            var uiSwitch = p.serializedObject.targetObject as Switcher;
+            // Draw Name
+            var bounds = bound.SplitByHeights(lineHeight);
+            var n = p.FindPropertyRelative("name");
+            var active = SwitcherInspector.IsActive(n.stringValue);
+            var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.25f, 0.25f);
+            var boundsLeft = bounds[1];
+            // indentation
+            boundsLeft.x += 30;
+            boundsLeft.width -= 30;
+            Color c = GUI.color;
+            if (active)
+            {
+                c = UpdatePos(p) ? ChangedSelectedColor : SelectedColor;
+            }
+
+            // Draw Title
+            using (new EnableScope(!n.stringValue.IsEmpty()))
+            {
+                using (new ColorScope(c))
+                {
+                    if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
+                    {
+                        Undo.RecordObjects(uiSwitch.objs.ToArray(), "switch");
+                        bool hasPreset = !uiSwitch.preset.IsEmpty();
+                        if (!hasPreset)
+                        {
+                            SwitcherInspector.SetActive(n.stringValue, n.stringValue);
+                        }
+                        else
+                        {
+                            SwitcherInspector.Activate(n.stringValue, !SwitcherInspector.IsActive(n.stringValue));
+                        }
+                        var script = p.serializedObject.targetObject as Switcher;
+                        script.SetKey(n.stringValue);
+                    }
+                }
+            }
+            EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
+            if (GUI.Button(nameBounds[2], "Collect"))
+            {
+                uiSwitch.Collect(n.stringValue);
+                EditorUtil.SetDirty(uiSwitch);
+            }
+            // Draw Visibility
+            var visibility = GetVisibilityDrawer(p);
+
+            var objBounds = boundsLeft.SplitByHeights((int)visibility.GetHeight());
+            boundsLeft = objBounds[1];
+            visibility.Draw(objBounds[0]);
+
+            // Draw Transform
+            if (uiSwitch.showTrans)
+            {
+                var trans = GetTransDrawer(p);
+                var tBound = boundsLeft.SplitByHeights(transHeight);
+                boundsLeft = tBound[1];
+                using (new ColorScope(c))
+                {
+                    trans.Draw(tBound[0]);
+                }
+            }
+
+            // Draw Actions
+            if (uiSwitch.showAction)
+            {
+                var actionBounds = boundsLeft.SplitByHeights(actionHeight);
+                boundsLeft = actionBounds[1];
+                var actionProperty = p.FindPropertyRelative("action");
+                EditorGUI.PropertyField(actionBounds[0], actionProperty);
+            }
+
+            // Draw ICompData
+            var dataBounds = boundsLeft.SplitByHeights(dataHeight);
+            boundsLeft = dataBounds[1];
+#if UNITY_2019_1_OR_NEWER
+            var dataProperty = p.FindPropertyRelative("data");
+            EditorGUI.PropertyField(dataBounds[0], dataProperty, true);
+#endif
+        }
+
         private PropertyReorder<bool> GetVisibilityDrawer(SerializedProperty p)
         {
             var v = vPool.Get(p.propertyPath);
@@ -98,83 +181,6 @@ namespace mulova.switcher
         }
 
         private double changedTime;
-        protected override void OnGUI(SerializedProperty p, Rect bound)
-        {
-            var uiSwitch = p.serializedObject.targetObject as Switcher;
-            // Draw Name
-            var bounds = bound.SplitByHeights(lineHeight);
-            var n = p.FindPropertyRelative("name");
-            var nameBounds = bounds[0].SplitByWidthsRatio(0.5f, 0.5f);
-            var boundsLeft = bounds[1];
-            // indentation
-            boundsLeft.x += 30;
-            boundsLeft.width -= 30;
-            Color c = GUI.color;
-            if (SwitcherInspector.IsActive(n.stringValue))
-            {
-                c = UpdatePos(p)? ChangedSelectedColor: SelectedColor;
-            }
-
-            // Draw Title
-            using (new EnableScope(!n.stringValue.IsEmpty()))
-            {
-                using (new ColorScope(c))
-                {
-                    if (GUI.Button(nameBounds[0], new GUIContent(n.stringValue)))
-                    {
-                        Undo.RecordObjects(uiSwitch.objs.ToArray(), "switch");
-                        bool hasPreset = !uiSwitch.preset.IsEmpty();
-                        if (!hasPreset)
-                        {
-                            SwitcherInspector.SetActive(n.stringValue, n.stringValue);
-                        } else
-                        {
-                            SwitcherInspector.Activate(n.stringValue, !SwitcherInspector.IsActive(n.stringValue));
-                        }
-                        var script = p.serializedObject.targetObject as Switcher;
-                        script.SetKey(n.stringValue);
-                    }
-                }
-            }
-            EditorGUI.PropertyField(nameBounds[1], n, new GUIContent(""));
-
-            // Draw Visibility
-            var visibility = GetVisibilityDrawer(p);
-
-            var objBounds = boundsLeft.SplitByHeights((int)visibility.GetHeight());
-            boundsLeft = objBounds[1];
-            visibility.Draw(objBounds[0]);
-
-            // Draw Transform
-            if (uiSwitch.showTrans)
-            {
-                var trans = GetTransDrawer(p);
-                var tBound = boundsLeft.SplitByHeights(transHeight);
-                boundsLeft = tBound[1];
-                using (new ColorScope(c))
-                {
-                    trans.Draw(tBound[0]);
-                }
-            }
-
-            // Draw Actions
-            if (uiSwitch.showAction)
-            {
-                var actionBounds = boundsLeft.SplitByHeights(actionHeight);
-                boundsLeft = actionBounds[1];
-                var actionProperty = p.FindPropertyRelative("action");
-                EditorGUI.PropertyField(actionBounds[0], actionProperty);
-            }
-
-            // Draw ICompData
-            var dataBounds = boundsLeft.SplitByHeights(dataHeight);
-            boundsLeft = dataBounds[1];
-#if UNITY_2019_1_OR_NEWER
-            var dataProperty = p.FindPropertyRelative("data");
-            EditorGUI.PropertyField(dataBounds[0], dataProperty, true);
-#endif
-        }
-
         private bool UpdatePos(SerializedProperty property)
         {
             var trans = property.FindPropertyRelative("trans");

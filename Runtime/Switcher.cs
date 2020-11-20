@@ -100,6 +100,15 @@ namespace mulova.switcher
             Apply();
         }
 
+        public void Collect(string setId)
+        {
+            var set = switches.Find(s => s.name == setId);
+            foreach (var d in set.data)
+            {
+                d.Collect(d.target);
+            }
+        }
+
         public void AddKey(params object[] list)
         {
             foreach (object o in list)
