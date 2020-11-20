@@ -21,7 +21,24 @@ namespace mulova.switcher
         protected override bool Equals(SelectableData<Button> obj)
         {
             var that = (ButtonData)obj;
-            return this.onClick == that.onClick;
+            if (this.onClick.GetPersistentEventCount() == that.onClick.GetPersistentEventCount())
+            {
+                for (int i=0; i<onClick.GetPersistentEventCount(); ++i)
+                {
+                    if (onClick.GetPersistentMethodName(i) != that.onClick.GetPersistentMethodName(i))
+                    {
+                        return false;
+                    }
+                    if (onClick.GetPersistentTarget(i) != that.onClick.GetPersistentTarget(i))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
         protected override int ComputeHashCode()

@@ -67,7 +67,7 @@ namespace mulova.switcher
             return this.interactable == that.interactable
                 && this.transition == that.transition
                 && this.navigation.Equals(that.navigation)
-                && this.targetGraphic == that.targetGraphic
+                && this.targetGraphic?.name == that.targetGraphic?.name
                 && this.colors.Equals(that.colors)
                 && this.spriteStates.Equals(that.spriteStates)
                 && TriggerEquals(this.animationTriggers, that.animationTriggers)
