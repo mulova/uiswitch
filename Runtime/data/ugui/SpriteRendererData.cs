@@ -45,6 +45,11 @@ namespace mulova.switcher
             return sprite.GetHashCode()
                 + enabled.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return target != null ? target.name : null;
+        }
     }
 }
 

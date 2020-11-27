@@ -67,7 +67,8 @@ namespace mulova.switcher
             return this.interactable == that.interactable
                 && this.transition == that.transition
                 && this.navigation.Equals(that.navigation)
-                && this.targetGraphic?.name == that.targetGraphic?.name
+                //&& !(this.targetGraphic != null ^ that.targetGraphic != null)
+                //&& (this.targetGraphic == null || this.targetGraphic.name == that.targetGraphic.name)
                 && this.colors.Equals(that.colors)
                 && this.spriteStates.Equals(that.spriteStates)
                 && TriggerEquals(this.animationTriggers, that.animationTriggers)
@@ -107,6 +108,11 @@ namespace mulova.switcher
             hash = hash * 37 + enabled.GetHashCode();
             hash = hash * 37 + ComputeHashCode();
             return hash;
+        }
+
+        public override string ToString()
+        {
+            return target != null ? target.name : null;
         }
     }
 }

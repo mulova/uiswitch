@@ -61,6 +61,11 @@ namespace mulova.switcher
             hash = hash * 37 + ComputeHashCode();
             return hash;
         }
+
+        public override string ToString()
+        {
+            return target != null ? target.name : null;
+        }
     }
 }
 
