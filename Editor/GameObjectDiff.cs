@@ -108,7 +108,7 @@ namespace mulova.switcher
             }
             if (diff)
             {
-                for (int i=0; i<arr.Length; ++i)
+                for (int i = 0; i < arr.Length; ++i)
                 {
                     arr[i].target = arr[0].target;
                     store[i].Add(arr[i]);

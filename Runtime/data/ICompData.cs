@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace mulova.switcher
 {
+    // NOTE: Equals() and GetHashCode() must be implemented
     public interface ICompData
     {
         Type type { get; }
