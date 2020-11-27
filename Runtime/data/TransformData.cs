@@ -74,6 +74,11 @@ namespace mulova.switcher
                 && this.rot.ApproximatelyEquals(that.rot)
                 && this.scale.ApproximatelyEquals(that.scale);
         }
+
+        public override string ToString()
+        {
+            return target != null ? target.name : null;
+        }
     }
 }
 

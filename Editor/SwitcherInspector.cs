@@ -266,7 +266,10 @@ namespace mulova.switcher
             {
                 foreach (var t in s.trans)
                 {
-                    changed |= t.hasChanged;
+                    if (t != null)
+                    {
+                        changed |= t.hasChanged;
+                    }
                 }
             }
             if (changed)
