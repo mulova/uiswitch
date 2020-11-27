@@ -29,10 +29,10 @@ namespace mulova.switcher
                     {
                         return false;
                     }
-                    if (onClick.GetPersistentTarget(i) != that.onClick.GetPersistentTarget(i))
-                    {
-                        return false;
-                    }
+                    //if (onClick.GetPersistentTarget(i) != that.onClick.GetPersistentTarget(i))
+                    //{
+                    //    return false;
+                    //}
                 }
                 return true;
             } else
