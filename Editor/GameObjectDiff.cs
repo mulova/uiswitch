@@ -69,7 +69,7 @@ namespace mulova.switcher
 
         private static void GetDiffRecursively(Transform[] parents, List<ICompData>[] store, bool isRoot)
         {
-            var comps = parents.ConvertAll(p => p.GetComponents<Component>().ToArray());
+            var comps = parents.ConvertAll(p => p.GetComponents<Component>().FindAll(c=> !(c is Switcher)).ToArray());
             for (int i = 0; i < comps[0].Length; ++i)
             {
                 GetComponentDiff(comps, i, store, isRoot);
@@ -176,16 +176,16 @@ namespace mulova.switcher
         public static List<string> GetComponentMismatch(IList<Transform> objs)
         {
             List<string> err = new List<string>();
-            var c0 = objs[0].GetComponents<Component>();
+            var c0 = objs[0].GetComponents<Component>().FindAll(c=> !(c is Switcher));
             for (int i=1; i<objs.Count; ++i)
             {
-                var c = objs[i].GetComponents<Component>();
-                if (c0.Length != c.Length)
+                var c = objs[i].GetComponents<Component>().FindAll(co => !(co is Switcher));
+                if (c0.Count != c.Count)
                 {
-                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Length-1} vs '{objs[i].name}': {c.Length-1}");
+                    err.Add($"Component Count Mismatch '{objs[0].name}': {c0.Count - 1} vs '{objs[i].name}': {c.Count - 1}");
                 } else
                 {
-                    for (int j=0; j<c.Length; ++j)
+                    for (int j=0; j<c.Count; ++j)
                     {
                         if (c0[j].GetType() != c[j].GetType())
                         {
