@@ -23,13 +23,6 @@ namespace mulova.switcher
         [MenuItem("GameObject/Switcher/Generate", true, 30)]
         public static bool IsCreateSwitcher()
         {
-            foreach (var o in Selection.gameObjects)
-            {
-                if (o.TryGetComponent<Switcher>(out var s))
-                {
-                    return false;
-                }
-            }
             return Selection.gameObjects.Length > 1;
         }
 
@@ -70,32 +63,24 @@ namespace mulova.switcher
         public static void CreateSwitcher()
         {
             var selected = sortedSelection;
-            var switchers = selected.FindAll(o => o.GetComponent<Switcher>() != null);
-            if (switchers.Count == 0)
+            var rootData = new List<RootData>();
+            var err = CreateSwitcher(selected);
+            if (string.IsNullOrEmpty(err))
             {
-                var rootData = new List<RootData>();
-                var err = CreateSwitcher(selected);
-                if (string.IsNullOrEmpty(err))
+                for (int i = 1; i < selected.Count; ++i)
                 {
-                    for (int i = 1; i < selected.Count; ++i)
-                    {
-                        rootData.Add(new RootData(selected[i].transform));
-                    }
-                    for (int i = 1; i < selected.Count; ++i)
-                    {
-                        Undo.DestroyObjectImmediate(selected[i]);
-                    }
-                    SpreadOut(selected[0].GetComponent<Switcher>(), rootData);
-                    Selection.activeGameObject = selected[0];
-                } else
-                {
-                    Debug.LogError(err);
-                    EditorUtility.DisplayDialog("Error", "Check out the log for more detail", "OK");
+                    rootData.Add(new RootData(selected[i].transform));
                 }
-            } else if (switchers.Count != selected.Count)
+                for (int i = 1; i < selected.Count; ++i)
+                {
+                    Undo.DestroyObjectImmediate(selected[i]);
+                }
+                SpreadOut(selected[0].GetComponent<Switcher>(), rootData);
+                Selection.activeGameObject = selected[0];
+            } else
             {
-                // this method is called several times (the same count as the selected game object)
-                EditorUtility.DisplayDialog("Error", "Remove switcher first", "OK");
+                Debug.LogError(err);
+                EditorUtility.DisplayDialog("Error", "Check out the log for more detail", "OK");
             }
         }
 
@@ -108,11 +93,12 @@ namespace mulova.switcher
                 clone.transform.SetSiblingIndex(s.transform.GetSiblingIndex() + i);
                 Undo.RegisterCreatedObjectUndo(clone.gameObject, name);
                 clone.SetKey(name);
-                clone.name = name; 
+                clone.name = name;
                 if (rootData != null && rootData.Count > i-1)
                 {
                     rootData[i - 1].ApplyTo(clone.transform);
                 }
+                Object.DestroyImmediate(clone.GetComponent<Switcher>());
             }
         }
 
@@ -192,11 +178,14 @@ namespace mulova.switcher
                 diffs[i] = diffs[i].FindAll(d => !(d.GetType() == typeof(TransformData)));
             }
 
-            var ui = root0.GetComponent<Switcher>();
-            if (ui == null)
+            var switcher = root0.GetComponent<Switcher>();
+            if (switcher != null)
             {
-                ui = root0.AddComponent<Switcher>();
-                Undo.RegisterCreatedObjectUndo(ui, root0.name);
+                switcher.Clear();
+            } else
+            {
+                switcher = root0.AddComponent<Switcher>();
+                Undo.RegisterCreatedObjectUndo(switcher, root0.name);
             }
             // Get Visibility Diffs
             var vDiffs = new List<List<TransformData>>();
@@ -219,7 +208,7 @@ namespace mulova.switcher
                     }
                 }
             }
-            ui.objs = vDiffs[0].ConvertAll(v => v.target.gameObject);
+            switcher.objs = vDiffs[0].ConvertAll(v => v.target.gameObject);
 
             // Get Position Diffs
             var posDiffs = new List<List<TransformData>>();
@@ -256,9 +245,9 @@ namespace mulova.switcher
                 s.trans = posDiffs[i].ConvertAll(t => t.trans);
                 s.pos = posDiffs[i].ConvertAll(t => t.pos);
                 s.visibility = vDiffs[i].ConvertAll(t => t.enabled);
-                ui.switches.Add(s);
+                switcher.switches.Add(s);
             }
-            EditorUtility.SetDirty(ui);
+            EditorUtility.SetDirty(switcher);
             //diffList.serializedProperty.ClearArray();
         }
     }

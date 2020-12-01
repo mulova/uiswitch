@@ -251,6 +251,13 @@ namespace mulova.switcher
             return switches.ConvertAll(s => s.name);
         }
 
+        public void Clear()
+        {
+            objs.Clear();
+            switches.Clear();
+            keySet.Clear();
+        }
+
         public void Apply()
         {
             var visible = new bool[objs.Count];
