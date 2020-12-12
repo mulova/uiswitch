@@ -67,7 +67,7 @@ namespace mulova.switcher
                     }
                 }
             }
-            return false;
+            return true;
         }
 
         public bool IsPreset(string s)
