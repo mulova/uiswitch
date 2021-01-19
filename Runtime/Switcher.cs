@@ -25,7 +25,7 @@ namespace mulova.switcher
 #pragma warning disable 0414
         [SerializeField, EnumType] private string enumType = "";
 #pragma warning restore 0414
-        [SerializeField] public List<GameObject> objs = new List<GameObject>();
+        [SerializeField, HideInInspector] public List<GameObject> objs = new List<GameObject>();
         public List<SwitchSet> switches = new List<SwitchSet>();
         [SerializeField, HideInInspector] public List<SwitchPreset> preset = new List<SwitchPreset>();
         public bool caseSensitive = true;
