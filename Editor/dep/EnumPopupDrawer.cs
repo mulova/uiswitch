@@ -32,11 +32,11 @@ namespace mulova.switcher
                         }
                         isEnum = true;
                     }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                     catch
                     {
                     }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
                 }
                 if (!isEnum)
                 {
